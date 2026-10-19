@@ -1,0 +1,34 @@
+test_ablation_same_detector (test_gasld.ScannerTests.test_ablation_same_detector) ... ok
+test_ambiguous_copy_source (test_gasld.ScannerTests.test_ambiguous_copy_source) ... ok
+test_bare_repo (test_gasld.ScannerTests.test_bare_repo) ... ok
+test_binary_zip_gzip (test_gasld.ScannerTests.test_binary_zip_gzip) ... ok
+test_budget_accounting (test_gasld.ScannerTests.test_budget_accounting) ... ok
+test_calibration_holdout (test_gasld.ScannerTests.test_calibration_holdout) ... ok
+test_cli_json_redaction (test_gasld.ScannerTests.test_cli_json_redaction) ... ok
+test_commit_limit_boundary (test_gasld.ScannerTests.test_commit_limit_boundary) ... ok
+test_confidence_threshold (test_gasld.ScannerTests.test_confidence_threshold) ... ok
+test_copy_into_existing_file (test_gasld.ScannerTests.test_copy_into_existing_file) ... ok
+test_current_scope_no_false_removal (test_gasld.ScannerTests.test_current_scope_no_false_removal) ... ok
+test_detached_head_reachable (test_gasld.ScannerTests.test_detached_head_reachable) ... ok
+test_edited_rename_and_copy (test_gasld.ScannerTests.test_edited_rename_and_copy) ... ok
+test_equal_timestamp_ancestry_order (test_gasld.ScannerTests.test_equal_timestamp_ancestry_order) ... ok
+test_exact_rename_then_delete (test_gasld.ScannerTests.test_exact_rename_then_delete) ... ok
+test_full_four_commit_lifecycle (test_gasld.ScannerTests.test_full_four_commit_lifecycle) ... ok
+test_invalid_weights (test_gasld.ScannerTests.test_invalid_weights) ... ok
+test_merge_parent_evidence (test_gasld.ScannerTests.test_merge_parent_evidence) ... ok
+test_open_world_evaluation (test_gasld.ScannerTests.test_open_world_evaluation) ... ok
+test_pack_invariance (test_gasld.ScannerTests.test_pack_invariance) ... ok
+test_ranking_and_structural_metrics (test_gasld.ScannerTests.test_ranking_and_structural_metrics) ... ok
+test_ref_snapshot_transition (test_gasld.ScannerTests.test_ref_snapshot_transition) ... ok
+test_replacement_is_not_confirmed_rotation (test_gasld.ScannerTests.test_replacement_is_not_confirmed_rotation) ... ok
+test_size_limit_no_false_removal (test_gasld.ScannerTests.test_size_limit_no_false_removal) ... ok
+test_standalone_blob_unknown (test_gasld.ScannerTests.test_standalone_blob_unknown) ... ok
+test_unreachable_is_historical (test_gasld.ScannerTests.test_unreachable_is_historical) ... ok
+test_unread_large_blobs_no_false_similarity (test_gasld.ScannerTests.test_unread_large_blobs_no_false_similarity) ... ok
+test_whitespace_identity_and_multiple_matches (test_gasld.ScannerTests.test_whitespace_identity_and_multiple_matches) ... ok
+test_worktree_packed_storage (test_gasld.ScannerTests.test_worktree_packed_storage) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 3.542s
+
+OK

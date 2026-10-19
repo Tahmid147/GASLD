@@ -1,0 +1,13 @@
+{
+  "README.md": "09c9538b0dd0e3ee53d2ee5c46383ee5ad886a52e47ca1bb7d53969c678cc109",
+  "VALIDATION.md": "181ea7915abfc3d19443304749c47963ae8802dd01161dae29bbf7a263b998b6",
+  "changes.patch": "b7f3bdb2f7c12caea930668463922797c93ae4e5d0bc63055aa6850e3c67924d",
+  "evidence/demo-ground-truth.json": "345685be914e03f939dd2c6f79831156ccac0e824ecdc8bc00bf1e49f9356cd3",
+  "evidence/demo-report.json": "1674dd600763cc14587ac298a0b7a91ee7b24c4d89297fb3b16b16de07c4ba05",
+  "evidence/demo-terminal.txt": "b75741e31a964b771808cdfa78fa42d916be52c0a3f72285c03931de0990fc81",
+  "evidence/experiments.json": "4090460f7be7aeebf0e0df0b71d6993a95d1c8e92eef5de1d4942a3f2302fa04",
+  "evidence/regression-tests.txt": "01a69eaf4f3f7558d13de55dfe815cbf3bd4a37105a381cdf3fc39c4e6e15dc8",
+  "main.py": "a3511572369823c47f87b5c638026b83651e372a4011446ac2433e43dc3bfc03",
+  "research.py": "504b039ab39c2d28315c60b595599746c2dcae5705ea50f2c4b6128cd2501891",
+  "test_gasld.py": "5082fff3ec047291847919901fb761eb99c907632320c2582f56060e5af31829"
+}

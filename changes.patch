@@ -1,0 +1,1251 @@
+--- original/main.py
++++ updated/main.py
+@@ -36,6 +36,11 @@
+ from difflib import SequenceMatcher
+ from hashlib import sha256
+ import json
++import gzip
++import io
++import zipfile
++import heapq
++import tracemalloc
+ import math
+ import os
+ from pathlib import Path
+@@ -48,7 +53,7 @@
+ 
+ 
+ NAME = "GASLD"
+-VERSION = "0.1.0-research"
++VERSION = "0.2.0-research"
+ MAX_BLOB_DEFAULT = 10 * 1024 * 1024
+ 
+ # GASLD PDF initial experimental risk configuration.
+@@ -107,7 +112,8 @@
+ 
+ 
+ def normalize_secret(value: str) -> str:
+-    return re.sub(r"\s+", "", value.strip().strip("\"'`"))
++    # Values have already been extracted from their syntax. Internal spaces are significant.
++    return value.replace("\r\n", "\n") if value.startswith("-----BEGIN ") else value
+ 
+ 
+ def fingerprint(value: str) -> str:
+@@ -151,11 +157,16 @@
+         k, sep, v = item.partition("=")
+         if not sep or k.strip() not in keys:
+             raise argparse.ArgumentTypeError(f"Invalid weight component: {item}")
+-        out[k.strip()] = float(v)
++        if k.strip() in out:
++            raise argparse.ArgumentTypeError("Duplicate weight component")
++        number = float(v)
++        if not math.isfinite(number) or number < 0:
++            raise argparse.ArgumentTypeError("Weights must be finite and nonnegative")
++        out[k.strip()] = number
+     if set(out) != set(keys):
+         raise argparse.ArgumentTypeError(f"Required keys: {', '.join(keys)}")
+     total = sum(out.values())
+-    if total <= 0:
++    if not math.isfinite(total) or total <= 0:
+         raise argparse.ArgumentTypeError("Weights must sum to a positive value")
+     return {k: out[k] / total for k in keys}
+ 
+@@ -229,6 +240,8 @@
+     context_score: float
+     content_confidence: float
+     binary_extracted: bool = False
++    context_key: str = ""
++    artifact: str = "blob"
+ 
+ 
+ @dataclass(slots=True)
+@@ -241,6 +254,9 @@
+     blob_oid: str | None
+     details: str
+     confidence: float = 1.0
++    parent_commit: str | None = None
++    related_path: str | None = None
++    evidence_status: str = "observed"
+ 
+ 
+ @dataclass(slots=True)
+@@ -281,6 +297,8 @@
+     def run(self, args: list[str], check: bool = True) -> subprocess.CompletedProcess:
+         env = os.environ.copy()
+         env["GIT_TERMINAL_PROMPT"] = "0"
++        env["GIT_NO_REPLACE_OBJECTS"] = "1"
++        env["GIT_NO_LAZY_FETCH"] = "1"
+         cp = subprocess.run(
+             ["git", "-C", str(self.path), *args],
+             stdout=subprocess.PIPE,
+@@ -340,6 +358,8 @@
+     def __enter__(self):
+         env = os.environ.copy()
+         env["GIT_TERMINAL_PROMPT"] = "0"
++        env["GIT_NO_REPLACE_OBJECTS"] = "1"
++        env["GIT_NO_LAZY_FETCH"] = "1"
+         self.proc = subprocess.Popen(
+             ["git", "-C", str(self.repo.path), "cat-file", "--batch"],
+             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env
+@@ -355,6 +375,12 @@
+                 self.proc.wait(timeout=1)
+             except subprocess.TimeoutExpired:
+                 self.proc.kill()
++                self.proc.wait()
++            finally:
++                if self.proc.stdout:
++                    self.proc.stdout.close()
++                if self.proc.stderr:
++                    self.proc.stderr.close()
+ 
+     def read(self, oid: str) -> tuple[str, bytes]:
+         assert self.proc and self.proc.stdin and self.proc.stdout
+@@ -366,7 +392,9 @@
+         obj_type = header[1].decode()
+         size = int(header[2])
+         data = self.proc.stdout.read(size)
+-        self.proc.stdout.read(1)
++        delimiter = self.proc.stdout.read(1)
++        if len(data) != size or delimiter != b"\n":
++            raise GitError(f"Truncated object {oid}")
+         return obj_type, data
+ 
+ 
+@@ -408,7 +436,7 @@
+     def add(name: str, p: str, score: float, group: int = 0):
+         rules.append(Rule(name, re.compile(p, re.I | re.M), score, group))
+ 
+-    # Distinctive structures supported by the uploaded NDSS paper.
++    # Built-in pattern heuristics; not a claim of exhaustive provider coverage.
+     add("aws_access_key_id", r"\bAKIA[0-9A-Z]{16}\b", 0.98)
+     add("google_api_key", r"\bAIza[0-9A-Za-z\-_]{35}\b", 0.98)
+     add("stripe_live_secret", r"\bsk_live_[0-9A-Za-z]{24,}\b", 0.98)
+@@ -425,10 +453,11 @@
+     # Generic context-aware fallbacks for secrets without a fixed vendor signature.
+     add(
+         "generic_credential_assignment",
+-        r"\b(?:api[_-]?key|secret|client[_-]?secret|access[_-]?token|auth[_-]?token|password|passwd|pwd|private[_-]?key|database[_-]?url|db[_-]?password)\b\s*[:=]\s*[\"'`]([^\"'`\s]{8,512})[\"'`]",
++        r"\b(?:api[_-]?key|secret|client[_-]?secret|access[_-]?token|auth[_-]?token|password|passwd|pwd|private[_-]?key|database[_-]?url|db[_-]?password)\b\s*[:=]\s*[\"'`]([^\"'`\r\n]{8,512})[\"'`]",
+         0.70, 1
+     )
+     add("bearer_token", r"\b(?:authorization\s*[:=]\s*[\"'`]?)bearer\s+([A-Za-z0-9._~+/=-]{16,2048})", 0.78, 1)
++    add("research_secret", r"\bRESEARCH_SECRET_[A-Z0-9]{32}\b", 1.0)
+     return rules
+ 
+ 
+@@ -447,6 +476,11 @@
+         risk_weights: dict[str, float],
+         lineage_threshold: float,
+         rotation_threshold: float,
++        min_confidence: float = 0.40,
++        model: str = "E",
++        progress: bool = False,
++        max_lineage_candidates: int = 64,
++        custom_rules: Path | None = None,
+     ):
+         self.repo = repo
+         self.scope = scope
+@@ -459,6 +493,17 @@
+         self.risk_weights = risk_weights
+         self.lineage_threshold = lineage_threshold
+         self.rotation_threshold = rotation_threshold
++        self.min_confidence = min_confidence
++        self.model = model
++        self.progress = progress
++        self.max_lineage_candidates = max_lineage_candidates
++        self.scan_status: dict[str, str] = {}
++        self.propagation_edges: list[dict[str, Any]] = []
++        self.uncertain_transitions: list[dict[str, Any]] = []
++        self.phase_seconds: dict[str, float] = {}
++        self.warnings: list[str] = []
++        self.peak_memory_bytes = 0
++        self._last_progress = 0.0
+ 
+         self.objects: dict[str, GitObject] = {}
+         self.refs: dict[str, str] = {}
+@@ -487,6 +532,16 @@
+         self.rules = build_rules()
+ 
+         self.stats = Counter()
++        if custom_rules:
++            for rule in json.loads(custom_rules.read_text())["rules"]:
++                score = float(rule.get("pattern_score", 0.95))
++                if not math.isfinite(score) or not 0 <= score <= 1:
++                    raise ValueError("Rule score must be within [0,1]")
++                rx = re.compile(rule["regex"], re.M)
++                group = int(rule.get("group", 0))
++                if group < 0 or group > rx.groups:
++                    raise ValueError("Invalid capture group in custom rule")
++                self.rules.append(Rule(rule["name"], rx, score, group))
+ 
+     # STEP 2 + STEP 4 foundations: complete object extraction and state.
+     def extract_objects_and_states(self) -> None:
+@@ -504,6 +559,8 @@
+         self.refs = self.repo.refs()
+         self.head_oid = self.repo.head()
+         self.reachable = self._rev_list("--all")
++        if self.head_oid:
++            self.reachable |= self._rev_list("HEAD")
+         self.current = self._head_current_objects() if self.head_oid else set()
+         self.packed = self._packed_objects()
+ 
+@@ -514,7 +571,7 @@
+         for o in self.objects.values():
+             o.reachable = o.oid in self.reachable
+             o.current = o.oid in self.current
+-            o.historical = o.reachable and not o.current
++            o.historical = False  # Set from commit association, independently of reachability.
+             o.unreachable = not o.reachable
+             o.packed = o.oid in self.packed
+             o.refs = sorted(rev_refs.get(o.oid, []))
+@@ -545,7 +602,10 @@
+ 
+     def _packed_objects(self) -> set[str]:
+         found: set[str] = set()
+-        packdir = self.repo.git_dir / "objects" / "pack"
++        common = Path(self.repo.text(["rev-parse", "--git-common-dir"]).strip())
++        if not common.is_absolute():
++            common = (self.repo.path / common).resolve()
++        packdir = common / "objects" / "pack"
+         if not packdir.exists():
+             return found
+         oid_re = re.compile(r"^[0-9a-fA-F]{40,64}$")
+@@ -567,8 +627,11 @@
+                     continue
+                 try:
+                     typ, data = br.read(oid)
+-                except GitError:
++                except GitError as exc:
++                    self.warnings.append(str(exc))
+                     continue
++                self.stats["structural_objects_read"] += 1
++                self.stats["structural_bytes_read"] += len(data)
+                 if typ == "commit":
+                     self._parse_commit(oid, data)
+                 elif typ == "tree":
+@@ -634,16 +697,51 @@
+                 return
+ 
+     def _make_commit_order(self) -> None:
+-        cp = self.repo.run(["rev-list", "--reverse", "--topo-order", "--all"], check=False)
+-        order = [x for x in cp.stdout.decode().splitlines() if x in self.commits] if cp.returncode == 0 else []
+-        seen = set(order)
+-        extras = sorted((x for x in self.commits if x not in seen), key=lambda x: (self.commits[x].timestamp, x))
+-        order.extend(extras)
+-        if self.max_commits:
+-            order = order[-self.max_commits:]
+-        self.commit_order = order
+-
+-    # Build commit snapshots and deletion/removal evidence.
++        # Kahn order over ALL local commits: timestamps never override ancestry.
++        indegree = {oid: sum(p in self.commits for p in ci.parents) for oid, ci in self.commits.items()}
++        children = defaultdict(list)
++        for oid, ci in self.commits.items():
++            for parent in ci.parents:
++                if parent in self.commits:
++                    children[parent].append(oid)
++        queue = [(self.commits[o].timestamp, o) for o, n in indegree.items() if n == 0]
++        heapq.heapify(queue)
++        order = []
++        while queue:
++            _, oid = heapq.heappop(queue)
++            order.append(oid)
++            for child in children[oid]:
++                indegree[child] -= 1
++                if indegree[child] == 0:
++                    heapq.heappush(queue, (self.commits[child].timestamp, child))
++        if len(order) != len(self.commits):
++            raise GitError("Cycle in commit graph")
++        # Mark evidence independently from ref reachability, including unreachable history.
++        historical = set()
++        for oid in order:
++            if oid == self.head_oid:
++                continue
++            historical.add(oid)
++            tree = self.commits[oid].tree
++            stack = [tree] if tree else []
++            while stack:
++                node = stack.pop()
++                if node in historical:
++                    continue
++                historical.add(node)
++                for entry in self.trees.get(node, []):
++                    if entry.obj_type == "tree":
++                        stack.append(entry.oid)
++                    elif entry.obj_type == "blob":
++                        historical.add(entry.oid)
++        for oid in historical:
++            if oid in self.objects:
++                self.objects[oid].historical = True
++        self.commit_order = order[-self.max_commits:] if self.max_commits else order
++        if len(self.commit_order) < len(order):
++            self.warnings.append("Commit limit truncates ancestry; boundary events are observations, not proven introductions.")
++
++
+     def build_snapshots(self) -> None:
+         for commit in self.commit_order:
+             ci = self.commits.get(commit)
+@@ -664,11 +762,15 @@
+                 self._diff_snapshots(parent, commit, self.snapshots[parent], new)
+ 
+     def _snapshot_tree(self, tree: str) -> dict[str, str]:
++        if tree not in self.trees:
++            raise GitError(f"Missing tree {tree}; refusing to infer absence from incomplete snapshots")
+         if tree in self.tree_snapshot_cache:
+             return self.tree_snapshot_cache[tree]
+         result: dict[str, str] = {}
+         def walk(t: str, prefix: str) -> None:
+-            for e in self.trees.get(t, []):
++            if t not in self.trees:
++                raise GitError(f"Missing subtree {t}; lifecycle cannot be reconstructed reliably")
++            for e in self.trees[t]:
+                 path = f"{prefix}/{e.name}" if prefix else e.name
+                 if e.obj_type == "blob":
+                     result[path] = e.oid
+@@ -680,122 +782,125 @@
+ 
+     def _diff_snapshots(self, parent: str, commit: str, old: dict[str, str], new: dict[str, str]) -> None:
+         ts = self.commits[commit].timestamp
+-        deleted: dict[str, str] = {}
+-        added: dict[str, str] = {}
+         for path in sorted(set(old) | set(new)):
+             a, b = old.get(path), new.get(path)
+             if a == b:
+                 continue
+-            if a and not b:
+-                event, deleted[path] = "deleted", a
+-            elif b and not a:
+-                event, added[path] = "added", b
++            event = "deleted" if a and not b else "added" if b and not a else "modified"
++            self.path_changes.append(PathChange(parent, commit, ts, path, a, b, event))
++
++
++    def infer_lineage(self) -> None:
++        # No hidden pre-budget reads: similarity only uses content already examined by detect().
++        def edge(parent, commit, sp, tp, a, b):
++            if a != b and (a not in self.blob_text or b not in self.blob_text):
++                return None
++            if a == b:
++                content = 1.0
+             else:
+-                event = "modified"
+-            self.path_changes.append(PathChange(parent, commit, ts, path, a, b, event))
+-
+-        # Exact blob continuity detects obvious rename/copy transitions.
+-        rev_deleted: dict[str, list[str]] = defaultdict(list)
+-        for p, b in deleted.items():
+-            rev_deleted[b].append(p)
+-        for new_path, blob in added.items():
+-            if blob in rev_deleted:
+-                self.path_changes.append(
+-                    PathChange(parent, commit, ts, new_path, blob, blob, "rename_or_copy", rev_deleted[blob][0])
+-                )
+-
+-    # STEP 5: inferred blob lineage.
+-    def infer_lineage(self) -> None:
+-        pairs = [c for c in self.path_changes if c.old_blob and c.new_blob and c.old_blob != c.new_blob]
+-        self._load_blob_text({x for c in pairs for x in (c.old_blob, c.new_blob) if x})
+-        for c in pairs:
+-            a = self.blob_text.get(c.old_blob or "", "")
+-            b = self.blob_text.get(c.new_blob or "", "")
+-            content = SequenceMatcher(None, a[:200000], b[:200000], autojunk=True).ratio() if a or b else 1.0
+-            source_path = c.old_path or c.path
+-            if source_path == c.path:
+-                path_score = 1.0
+-            else:
+-                pa, pb = Path(source_path), Path(c.path)
+-                path_score = clamp01(0.65 * SequenceMatcher(None, pa.name, pb.name).ratio() + 0.35 * SequenceMatcher(None, str(pa.parent), str(pb.parent)).ratio())
+-            commit_score = 1.0 if c.parent else 0.5
+-            old_ts = self.commits[c.parent].timestamp if c.parent in self.commits else c.timestamp
+-            days = max(0, c.timestamp - old_ts) / 86400.0
+-            temporal = math.exp(-days / 90.0)
+-            conf = (
+-                self.lineage_weights["content"] * content +
+-                self.lineage_weights["path"] * path_score +
+-                self.lineage_weights["commit"] * commit_score +
+-                self.lineage_weights["temporal"] * temporal
+-            )
+-            if conf >= self.lineage_threshold:
+-                self.lineage.append(LineageEdge(
+-                    c.old_blob or "", c.new_blob or "", source_path, c.path, c.parent, c.commit,
+-                    round(content, 6), round(path_score, 6), round(commit_score, 6), round(temporal, 6), round(conf, 6)
+-                ))
++                aa, bb = self.blob_text[a], self.blob_text[b]
++                if not aa or not bb:
++                    return None
++                content = SequenceMatcher(None, aa[:200000], bb[:200000], autojunk=True).ratio()
++            path = 1.0 if sp == tp else (0.65 * SequenceMatcher(None, Path(sp).name, Path(tp).name).ratio() + 0.35 * SequenceMatcher(None, str(Path(sp).parent), str(Path(tp).parent)).ratio())
++            days = max(0, self.commits[commit].timestamp - self.commits[parent].timestamp) / 86400
++            temporal = math.exp(-days / 90)
++            confidence = sum(self.lineage_weights[k] * v for k, v in {"content": content, "path": path, "commit": 1.0, "temporal": temporal}.items())
++            if a == b:
++                confidence = 1.0
++            if confidence < self.lineage_threshold or (sp != tp and content < 0.65):
++                return None
++            return LineageEdge(a, b, sp, tp, parent, commit, content, path, 1.0, temporal, round(confidence, 6))
++
++        for commit in self.commit_order:
++            ci = self.commits[commit]
++            new = self.snapshots.get(commit, {})
++            for parent in ci.parents:
++                if parent not in self.snapshots:
++                    continue
++                old = self.snapshots[parent]
++                for path in sorted(set(old) & set(new)):
++                    if old[path] != new[path]:
++                        e = edge(parent, commit, path, path, old[path], new[path])
++                        if e:
++                            self.lineage.append(e)
++                for tp in sorted(set(new) - set(old)):
++                    exact = [sp for sp in old if old[sp] == new[tp]]
++                    if exact:
++                        sources = sorted(exact)
++                    else:
++                        sources = sorted(old, key=lambda sp: (sp in new, -SequenceMatcher(None, Path(sp).name, Path(tp).name).ratio(), sp))
++                    if len(sources) > self.max_lineage_candidates:
++                        self.stats["lineage_candidate_paths_skipped"] += len(sources) - self.max_lineage_candidates
++                    candidates = []
++                    for sp in sources[:self.max_lineage_candidates]:
++                        e = edge(parent, commit, sp, tp, old[sp], new[tp])
++                        if e:
++                            candidates.append(e)
++                    candidates.sort(key=lambda e: (-e.confidence, e.source_path))
++                    if candidates and (len(candidates) == 1 or candidates[0].confidence - candidates[1].confidence >= 0.05):
++                        self.lineage.append(candidates[0])
++                    elif candidates:
++                        self.uncertain_transitions.append({"commit": commit, "parent": parent, "path": tp, "reason": "ambiguous_lineage_source", "candidates": [asdict(e) for e in candidates]})
++
+ 
+     def _load_blob_text(self, ids: Iterable[str]) -> None:
+-        need = [x for x in set(ids) if x and x not in self.blob_text]
+-        if not need:
+-            return
++        # Backward compatible method; detect() owns content reads and accounting.
++        return None
++
++
++    def detect(self) -> None:
++        blobs = [o.oid for o in self.objects.values() if o.obj_type == "blob"]
++        for oid in blobs:
++            self.scan_status[oid] = "out_of_scope" if not self._in_scope(self.objects[oid]) else "budget_excluded"
++        selected = [oid for oid in blobs if self._in_scope(self.objects[oid])]
++        selected.sort(key=lambda oid: (-self._pre_priority(self.objects[oid]), oid))
++        if self.object_budget:
++            selected = selected[:self.object_budget]
+         with BatchReader(self.repo) as br:
+-            for oid in need:
+-                obj = self.objects.get(oid)
+-                if not obj or obj.obj_type != "blob" or obj.size > self.max_blob_size:
+-                    self.blob_text[oid] = ""
+-                    continue
+-                try:
+-                    typ, raw = br.read(oid)
+-                except GitError:
+-                    self.blob_text[oid] = ""
+-                    continue
+-                if typ != "blob":
+-                    self.blob_text[oid] = ""
+-                elif self._binary(raw):
+-                    self.blob_text[oid] = self._printable(raw) if self.include_binary_strings else ""
+-                else:
+-                    self.blob_text[oid] = raw.decode("utf-8", errors="replace")
+-
+-    # STEP 6: secret candidate detection.
+-    def detect(self) -> None:
+-        blobs = [o.oid for o in self.objects.values() if o.obj_type == "blob" and self._in_scope(o)]
+-        blobs.sort(key=lambda oid: self._pre_priority(self.objects[oid]), reverse=True)
+-        if self.object_budget:
+-            blobs = blobs[:self.object_budget]
+-
+-        with BatchReader(self.repo) as br:
+-            for oid in blobs:
++            for i, oid in enumerate(selected, 1):
+                 obj = self.objects[oid]
+                 if obj.size > self.max_blob_size:
++                    self.scan_status[oid] = "size_excluded"
+                     self.stats["skipped_large_blobs"] += 1
+                     continue
+                 try:
+                     typ, raw = br.read(oid)
+-                except GitError:
+-                    continue
+-                if typ != "blob":
++                except GitError as exc:
++                    self.scan_status[oid] = "read_error"
++                    self.warnings.append(str(exc))
+                     continue
+                 self.stats["objects_scanned"] += 1
+                 self.stats["bytes_scanned"] += len(raw)
++                self.stats["blob_reads_total"] += 1
++                self.stats["blob_bytes_read_total"] += len(raw)
+                 binary = self._binary(raw)
+                 if binary:
+                     self.stats["binary_blobs"] += 1
+-                    if not self.include_binary_strings:
+-                        continue
+-                    text, binary_extracted = self._printable(raw), True
+-                else:
+-                    text, binary_extracted = raw.decode("utf-8", errors="replace"), False
+-                ds = self._detect_text(text, binary_extracted)
+-                if ds:
+-                    self.detections[oid] = ds
+-                    self.blob_text.setdefault(oid, text)
++                if binary and not self.include_binary_strings:
++                    self.scan_status[oid] = "binary_excluded"
++                    continue
++                pieces = self._content_parts(raw)
++                self.scan_status[oid] = "scanned_binary_partial" if binary or raw.startswith((b"PK", b"\x1f\x8b")) else "scanned_text"
++                ds = []
++                texts = []
++                for artifact, text, partial in pieces:
++                    texts.append(text)
++                    for detection in self._detect_text(text, partial):
++                        detection.artifact = artifact
++                        ds.append(detection)
++                self.blob_text[oid] = "\n".join(texts)[:200000]
++                self.detections[oid] = ds
++                self.stats["accepted_matches"] += len(ds)
++                self._progress(f"Detecting blobs {i}/{len(selected)}; matches={self.stats['accepted_matches']}")
++
+ 
+     def _in_scope(self, o: GitObject) -> bool:
+         return self.scope == "all" or (self.scope == "current" and o.current) or (self.scope == "reachable" and o.reachable) or (self.scope == "unreachable" and o.unreachable)
+ 
+     @staticmethod
+     def _pre_priority(o: GitObject) -> float:
+-        return (1.0 if o.current else 0.82 if o.reachable else 0.45) + (0.20 if o.historical else 0.0) + (0.05 if o.packed else 0.0)
++        return (1.0 if o.current else 0.82 if o.reachable else 0.45) + (0.20 if o.historical else 0.0)
+ 
+     @staticmethod
+     def _binary(raw: bytes) -> bool:
+@@ -837,7 +942,13 @@
+                 last = text.rfind("\n", 0, start)
+                 column = start + 1 if last < 0 else start - last
+                 d = Detection(rule.name, value, norm, fingerprint(norm), line, column, round(rule.pattern_score, 6), round(escore, 6), round(cscore, 6), round(clamp01(confidence), 6), binary_extracted)
+-                key = d.fingerprint
++                prefix = text[max(0, text.rfind("\n", 0, start) + 1):start]
++                assigned = re.search(r"([A-Za-z_][A-Za-z0-9_.-]*)[\"\']?\s*[:=]\s*[\"\']?$", prefix)
++                d.context_key = assigned.group(1).lower() if assigned else ""
++                if d.content_confidence < self.min_confidence:
++                    self.stats["rejected_candidates"] += 1
++                    continue
++                key = (d.fingerprint, d.line, d.column)
+                 if key not in out or d.content_confidence > out[key].content_confidence:
+                     out[key] = d
+         return sorted(out.values(), key=lambda d: (d.line, d.column, d.detector))
+@@ -846,10 +957,10 @@
+     def correlate(self) -> None:
+         all_dets = [d for ds in self.detections.values() for d in ds]
+         counters = Counter()
+-        for d in all_dets:
++        for d in sorted(all_dets, key=lambda d: (d.fingerprint, d.detector)):
+             if d.fingerprint not in self.secret_ids:
+                 counters[d.detector] += 1
+-                self.secret_ids[d.fingerprint] = f"S-{d.detector[:12].upper()}-{counters[d.detector]:04d}"
++                self.secret_ids[d.fingerprint] = f"S-{d.fingerprint[:20]}"
+ 
+         parent = {fp: fp for fp in self.secret_ids}
+         def find(x: str) -> str:
+@@ -865,7 +976,8 @@
+         for edge in self.lineage:
+             for a in self.detections.get(edge.source_blob, []):
+                 for b in self.detections.get(edge.target_blob, []):
+-                    if a.detector != b.detector or a.fingerprint == b.fingerprint:
++                    if (a.detector != b.detector or a.fingerprint == b.fingerprint
++                            or not a.context_key or a.context_key != b.context_key):
+                         continue
+                     sim = SequenceMatcher(None, a.normalized, b.normalized, autojunk=False).ratio()
+                     if sim >= self.rotation_threshold:
+@@ -882,108 +994,126 @@
+ 
+     # STEP 8: lifecycle construction.
+     def build_lifecycle(self) -> None:
+-        # Map findings to all known commit/path occurrences.
+-        seen: set[tuple[str, str, str, str]] = set()
++        def values(blob):
++            return {d.fingerprint: d for d in self.detections.get(blob or "", [])}
++        def examined(blob):
++            return blob is None or self.scan_status.get(blob) == "scanned_text"
++        def event(fp, kind, commit, path, blob, parent=None, related=None, details="", confidence=1.0, status="observed"):
++            self.events.append(LifecycleEvent(self.secret_ids[fp], kind, commit, self.commits[commit].timestamp, path, blob, details, confidence, parent, related, status))
++        # Occurrence context differs from the global blob state.
+         for commit in self.commit_order:
+-            ci = self.commits.get(commit)
+-            if not ci:
+-                continue
+-            for path, blob in self.snapshots.get(commit, {}).items():
+-                for d in self.detections.get(blob, []):
+-                    sid = self.secret_ids[d.fingerprint]
+-                    key = (sid, blob, commit, path)
+-                    if key in seen:
+-                        continue
+-                    seen.add(key)
+-                    o = self.objects[blob]
+-                    self.occurrences.append(Occurrence(
+-                        sid, self.family_ids[d.fingerprint], d.detector, d.fingerprint,
+-                        blob, path, commit, ci.timestamp, o.current, o.reachable,
+-                        o.historical, o.packed, d.content_confidence
+-                    ))
+-
++            ci = self.commits[commit]
++            for path, blob in sorted(self.snapshots.get(commit, {}).items()):
++                obj = self.objects.get(blob)
++                if not obj:
++                    continue
++                for fp, d in values(blob).items():
++                    self.occurrences.append(Occurrence(self.secret_ids[fp], self.family_ids[fp], d.detector, fp, blob, path, commit, ci.timestamp, commit == self.head_oid, obj.reachable, commit != self.head_oid, obj.packed, d.content_confidence, evidence=["Current/historical labels describe this commit occurrence; reachability/storage describe its blob."]))
+         known = {o.blob_oid for o in self.occurrences}
+         for blob, ds in self.detections.items():
+             if blob in known:
+                 continue
+             obj = self.objects[blob]
+-            for d in ds:
+-                self.occurrences.append(Occurrence(
+-                    self.secret_ids[d.fingerprint], self.family_ids[d.fingerprint], d.detector,
+-                    d.fingerprint, blob, "<unknown>", None, None, obj.current, obj.reachable,
+-                    obj.historical, obj.packed, d.content_confidence,
+-                    evidence=["Blob exists in local object database without reconstructed path/commit association."]
+-                ))
+-
+-        # Direct parent->commit transitions provide introduction/persistence/removal/deletion evidence.
+-        for c in self.path_changes:
+-            old_ds = self.detections.get(c.old_blob or "", [])
+-            new_ds = self.detections.get(c.new_blob or "", [])
+-            old_fp = {d.fingerprint: d for d in old_ds}
+-            new_fp = {d.fingerprint: d for d in new_ds}
+-
+-            for fp in new_fp:
+-                sid = self.secret_ids[fp]
+-                event = "persistence" if fp in old_fp else "introduction"
+-                details = "Identical secret persists into successor content." if event == "persistence" else "Secret appears in successor content."
+-                self.events.append(LifecycleEvent(sid, event, c.commit, c.timestamp, c.path, c.new_blob, details))
+-
+-            for fp in old_fp:
+-                if fp in new_fp:
+-                    continue
+-                sid = self.secret_ids[fp]
+-                if c.new_blob is None:
+-                    event, details, conf = "file_deleted", "File containing the secret was deleted.", 1.0
+-                else:
+-                    event, details, conf = "secret_removed", "Secret is absent from successor blob.", 0.95
+-                self.events.append(LifecycleEvent(sid, event, c.commit, c.timestamp, c.path, c.old_blob, details, conf))
+-
+-            # Modified/rotated values are linked as a family but never treated as identical.
+-            for a in old_ds:
+-                for b in new_ds:
+-                    if a.detector != b.detector or a.fingerprint == b.fingerprint:
++            for fp, d in values(blob).items():
++                self.occurrences.append(Occurrence(self.secret_ids[fp], self.family_ids[fp], d.detector, fp, blob, "<unknown>", None, None, obj.current, obj.reachable, obj.historical, obj.packed, d.content_confidence, evidence=["No reconstructed path/commit; chronology is unknown."]))
++
++        # Parent-specific lineage prevents branch timestamps from inventing transitions.
++        inferred = {(e.source_commit, e.target_commit, e.target_path): e for e in self.lineage if e.source_path != e.target_path}
++        history = {}  # commit -> path -> fp -> last known secret-bearing blob
++        for commit in self.commit_order:
++            ci = self.commits[commit]
++            new = self.snapshots.get(commit, {})
++            carried = defaultdict(dict)
++            parents = ci.parents or [None]
++            for parent in parents:
++                boundary = parent is not None and parent not in self.snapshots
++                old = self.snapshots.get(parent, {})
++                prior = history.get(parent, {})
++                moved = {e.source_path: e.target_path for (p, c, _), e in inferred.items() if p == parent and c == commit and e.source_path not in new}
++                for path in sorted(set(old) | set(new)):
++                    a, b = old.get(path), new.get(path)
++                    edge = inferred.get((parent, commit, path))
++                    source_path = edge.source_path if edge else path
++                    if edge:
++                        a = old.get(source_path)
++                    before, after = values(a), values(b)
++                    past = dict(prior.get(source_path, {}))
++                    for fp in before:
++                        past[fp] = a
++                    if b:
++                        carried[path].update(past)
++                        for fp in after:
++                            carried[path][fp] = b
++                    if path in moved and b is None:
++                        continue  # A rename is not a deletion of the tracked file identity.
++                    if a == b and b and not edge:
++                        for fp in after:
++                            event(fp, "persistence", commit, path, b, parent, details="Same accepted secret in unchanged content.")
+                         continue
+-                    sim = SequenceMatcher(None, a.normalized, b.normalized, autojunk=False).ratio()
+-                    if sim >= self.rotation_threshold:
+-                        self.events.append(LifecycleEvent(
+-                            self.secret_ids[a.fingerprint], "credential_modified_or_rotated",
+-                            c.commit, c.timestamp, c.path, c.new_blob,
+-                            f"Successor credential similarity={sim:.3f}; related but not identical.", sim
+-                        ))
+-                        self.events.append(LifecycleEvent(
+-                            self.secret_ids[b.fingerprint], "credential_modified_or_rotated",
+-                            c.commit, c.timestamp, c.path, c.new_blob,
+-                            f"Predecessor credential similarity={sim:.3f}; related but not identical.", sim
+-                        ))
+-
+-        # Attach retention state after deletion/removal.
++                    for fp in after:
++                        if fp in before:
++                            kind = ("renamed" if source_path not in new else "copied") if edge else "persistence"
++                            event(fp, kind, commit, path, b, parent, source_path if edge else None, "Parent-child content evidence; transfer source is inferred." if edge else "Identical credential persists.", edge.confidence if edge else 1.0, "inferred" if edge else "observed")
++                        elif boundary or not examined(a):
++                            event(fp, "first_observed", commit, path, b, parent, details="Predecessor unavailable or not fully text-scanned; introduction unproven.", status="incomplete")
++                        else:
++                            event(fp, "introduction", commit, path, b, parent, details="Accepted candidate absent from examined predecessor at this path.")
++                    for fp in before.keys() - after.keys():
++                        if b is None:
++                            event(fp, "file_deleted", commit, path, a, parent, details="Secret-bearing file removed from this parent-child transition.")
++                        elif examined(b):
++                            event(fp, "secret_removed", commit, path, a, parent, details="No matching accepted credential in examined successor text.")
++                        else:
++                            self.uncertain_transitions.append({"secret_id": self.secret_ids[fp], "parent": parent, "commit": commit, "path": path, "reason": "successor_not_fully_examined", "scan_status": self.scan_status.get(b, "unknown")})
++                    if b is None:
++                        for fp, secret_blob in past.items():
++                            if fp not in before:
++                                event(fp, "file_deleted_after_removal", commit, path, secret_blob, parent, details="Previously tracked credential removed earlier; associated file now deleted.")
++                    for fp, da in before.items():
++                        for gp, db in after.items():
++                            if fp == gp or not da.context_key or da.context_key != db.context_key or da.detector != db.detector:
++                                continue
++                            similarity = SequenceMatcher(None, da.normalized, db.normalized, autojunk=False).ratio()
++                            # Replacement is a contextual observation, never proof of revocation/rotation.
++                            event(fp, "possible_credential_replacement", commit, path, b, parent, details=f"Same assignment key; successor={self.secret_ids[gp]}; similarity={similarity:.3f}. Credential rotation/validity unverified.", confidence=0.75, status="inferred")
++            history[commit] = dict(carried)
++        # Deduplicate per parent, preserving distinct merge-parent evidence.
++        unique = {}
+         for e in self.events:
+-            if e.event in {"file_deleted", "secret_removed"} and e.blob_oid in self.objects:
++            unique[(e.secret_id, e.event, e.parent_commit, e.commit, e.path, e.blob_oid, e.related_path)] = e
++        self.events = list(unique.values())
++        for e in self.events:
++            if e.event in {"file_deleted", "file_deleted_after_removal", "secret_removed"} and e.blob_oid in self.objects:
+                 obj = self.objects[e.blob_oid]
+-                storage = "packed" if obj.packed else "loose/unverified-pack"
+-                reach = "reachable" if obj.reachable else "unreachable"
+-                e.details += f" Retained object state at scan time: {reach}, {storage}."
+-
+-    # STEP 10: propagation.
++                e.details += f" Retained locally: reachable={obj.reachable}, packed={obj.packed}."
++
++
+     def analyze_propagation(self) -> None:
+-        by_sid: dict[str, list[Occurrence]] = defaultdict(list)
+-        for o in self.occurrences:
+-            by_sid[o.secret_id].append(o)
+-        for sid, occs in by_sid.items():
+-            rows = []
+-            seen = set()
+-            for o in sorted(occs, key=lambda x: (x.timestamp or 0, x.path, x.blob_oid)):
+-                k = (o.path, o.blob_oid)
+-                if k in seen:
+-                    continue
+-                seen.add(k)
+-                rows.append({
+-                    "timestamp": o.timestamp, "commit": o.commit, "path": o.path,
+-                    "blob_oid": o.blob_oid, "reachable": o.reachable,
+-                })
+-            self.propagation[sid] = rows
+-
+-    # STEP 9 + STEP 11: Git-aware risk score and prioritization.
++        by_sid = defaultdict(list)
++        for occurrence in self.occurrences:
++            by_sid[occurrence.secret_id].append(occurrence)
++        for sid, occurrences in by_sid.items():
++            self.propagation[sid] = [{"commit": o.commit, "path": o.path, "blob_oid": o.blob_oid, "timestamp": o.timestamp, "reachable": o.reachable} for o in occurrences]
++        for e in self.events:
++            if e.event in {"copied", "renamed"}:
++                self.propagation_edges.append({"secret_id": e.secret_id, "source_commit": e.parent_commit, "target_commit": e.commit, "source_path": e.related_path, "target_path": e.path, "kind": e.event, "confidence": e.confidence, "evidence": "Exact secret identity plus parent-child inferred file lineage; not proof of a human copy action."})
++        # Cross-path secret copies may occur into existing files, without file-level lineage.
++        existing = {(e["secret_id"], e["source_commit"], e["target_commit"], e["target_path"]) for e in self.propagation_edges}
++        for e in self.events:
++            if e.event != "introduction" or e.parent_commit not in self.snapshots:
++                continue
++            sources = set()
++            for path, blob in self.snapshots[e.parent_commit].items():
++                if path != e.path and any(self.secret_ids[d.fingerprint] == e.secret_id for d in self.detections.get(blob, [])):
++                    sources.add(path)
++            key = (e.secret_id, e.parent_commit, e.commit, e.path)
++            if key in existing:
++                continue
++            if len(sources) == 1:
++                self.propagation_edges.append({"secret_id": e.secret_id, "source_commit": e.parent_commit, "target_commit": e.commit, "source_path": next(iter(sources)), "target_path": e.path, "kind": "possible_copy", "confidence": 0.8, "evidence": "Exact identity at a unique predecessor location; transfer inferred, not proven."})
++            elif sources:
++                self.uncertain_transitions.append({"secret_id": e.secret_id, "commit": e.commit, "path": e.path, "reason": "ambiguous_secret_copy_source", "source_paths": sorted(sources)})
++
+     def score(self) -> None:
+         lineage_by_blob = defaultdict(float)
+         for e in self.lineage:
+@@ -996,10 +1126,26 @@
+         locations: dict[str, set[str]] = defaultdict(set)
+         times: dict[str, list[int]] = defaultdict(list)
+         for o in self.occurrences:
+-            locations[o.secret_id].add(o.path)
++            if o.path != "<unknown>":
++                locations[o.secret_id].add(o.path)
+             if o.timestamp is not None:
+                 times[o.secret_id].append(o.timestamp)
+-        max_loc = max([len(x) for x in locations.values()] or [1])
++
++        ancestry_cache = {}
++        def ancestor(older, newer):
++            if older is None or newer is None:
++                return False
++            pair = (older, newer)
++            if pair not in ancestry_cache:
++                stack, seen = [newer], set()
++                while stack:
++                    commit = stack.pop()
++                    if commit in seen:
++                        continue
++                    seen.add(commit)
++                    stack.extend(self.commits[commit].parents if commit in self.commits else [])
++                ancestry_cache[pair] = older in seen
++            return ancestry_cache[pair]
+ 
+         for o in self.occurrences:
+             if o.current:
+@@ -1014,12 +1160,12 @@
+ 
+             d = 0.0
+             for e in events_by_sid[o.secret_id]:
+-                if e.blob_oid == o.blob_oid or e.path == o.path:
+-                    if e.event == "file_deleted":
++                if ancestor(o.commit, e.commit) and (e.blob_oid == o.blob_oid or e.path == o.path):
++                    if e.event in {"file_deleted", "file_deleted_after_removal"}:
+                         d = max(d, 1.0)
+                     elif e.event == "secret_removed":
+                         d = max(d, 0.90)
+-                    elif e.event == "credential_modified_or_rotated":
++                    elif e.event == "possible_credential_replacement":
+                         d = max(d, 0.65)
+             if d:
+                 o.evidence.append(f"Deletion/removal evidence={d:.2f}.")
+@@ -1030,58 +1176,86 @@
+             h = clamp01(0.65 * (0.75 if o.historical else 0.25) + 0.35 * life)
+             l = clamp01(lineage_by_blob[o.blob_oid])
+             nloc = len(locations[o.secret_id])
+-            p = 0.0 if max_loc <= 1 else clamp01(math.log1p(max(0, nloc - 1)) / math.log(max_loc))
++            p = clamp01(1.0 - math.exp(-max(0, nloc - 1) / 3.0))
+             if nloc > 1:
+                 o.evidence.append(f"Same exact secret appears across {nloc} locations.")
+ 
+-            risk = (
+-                self.risk_weights["content"] * o.content_confidence +
+-                self.risk_weights["reachability"] * r +
+-                self.risk_weights["deletion"] * d +
+-                self.risk_weights["historical"] * h +
+-                self.risk_weights["lineage"] * l +
+-                self.risk_weights["propagation"] * p
+-            )
+             o.reachability_score = round(r, 6)
+             o.deletion_score = round(d, 6)
+             o.historical_score = round(h, 6)
+             o.lineage_score = round(l, 6)
+             o.propagation_score = round(p, 6)
++            components = {"content": o.content_confidence, "reachability": r, "deletion": d, "historical": h, "lineage": l, "propagation": p}
++            active = {"A": {"content"}, "B": {"content", "reachability", "historical"}, "C": {"content", "reachability", "historical", "lineage"}, "D": {"content", "reachability", "historical", "lineage", "propagation"}, "E": set(components)}[self.model]
++            denom = sum(self.risk_weights[k] for k in active)
++            if denom <= 0:
++                raise ValueError("Active model weights must have a positive sum")
++            risk = sum(self.risk_weights[k] * components[k] for k in active) / denom
+             o.final_risk = round(clamp01(risk), 6)
+             o.risk_class = risk_class(o.final_risk)
+ 
+-        self.occurrences.sort(key=lambda x: (-x.final_risk, x.secret_id, x.path))
++        self.occurrences.sort(key=lambda x: (-x.final_risk, x.fingerprint, x.path, x.commit or ""))
+ 
+     # STEP 12: optional controlled ground-truth evaluation.
+     def evaluate(self, manifest: Path | None) -> dict[str, Any] | None:
+-        if not manifest:
++        if manifest is None:
+             return None
+-        data = json.loads(manifest.read_text(encoding="utf-8"))
+-        items = data.get("items")
+-        if not isinstance(items, list):
+-            raise ValueError("Ground-truth manifest must contain an 'items' list")
+-        detected = set(self.secret_ids)
+-        tp = fp = tn = fn = 0
+-        rows = []
+-        for item in items:
+-            f = item.get("fingerprint") or (fingerprint(str(item["value"])) if "value" in item else None)
+-            if not f:
+-                raise ValueError("Ground-truth item requires 'fingerprint' or 'value'")
+-            expected = bool(item.get("expected_secret", True))
+-            observed = f in detected
+-            if expected and observed:
+-                tp += 1; verdict = "TP"
+-            elif expected:
+-                fn += 1; verdict = "FN"
+-            elif observed:
+-                fp += 1; verdict = "FP"
+-            else:
+-                tn += 1; verdict = "TN"
+-            rows.append({"id": item.get("id"), "expected_secret": expected, "observed": observed, "verdict": verdict})
+-        precision = tp / (tp + fp) if tp + fp else 0.0
+-        recall = tp / (tp + fn) if tp + fn else 0.0
+-        f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
+-        return {"tp": tp, "fp": fp, "tn": tn, "fn": fn, "precision": round(precision, 6), "recall": round(recall, 6), "f1": round(f1, 6), "items": rows}
++        report = self.report(str(self.repo.path), [], now_iso(), 0, False, None)
++        return evaluate_report(report, json.loads(manifest.read_text(encoding="utf-8")))
++
++    def _content_parts(self, raw: bytes) -> list[tuple[str, str, bool]]:
++        # Bounded, in-memory extraction. No archive paths are written to disk.
++        out = []
++        remaining = self.max_blob_size
++        members = 0
++        def unpack(data, name, depth):
++            nonlocal remaining, members
++            if depth < 2 and data.startswith(b"PK\x03\x04"):
++                try:
++                    with zipfile.ZipFile(io.BytesIO(data)) as z:
++                        for entry in z.infolist():
++                            if entry.is_dir():
++                                continue
++                            members += 1
++                            if members > 100 or entry.file_size > remaining:
++                                self.stats["archive_members_skipped"] += 1
++                                continue
++                            with z.open(entry) as f:
++                                value = f.read(remaining + 1)
++                            if len(value) > remaining:
++                                self.stats["archive_members_skipped"] += 1
++                                continue
++                            remaining -= len(value)
++                            self.stats["archive_bytes_expanded"] += len(value)
++                            unpack(value, name + "!" + entry.filename, depth + 1)
++                    return
++                except (OSError, ValueError, RuntimeError, zipfile.BadZipFile, NotImplementedError):
++                    self.stats["archive_errors"] += 1
++            elif depth < 2 and data.startswith(b"\x1f\x8b"):
++                try:
++                    with gzip.GzipFile(fileobj=io.BytesIO(data)) as f:
++                        value = f.read(remaining + 1)
++                    if len(value) > remaining:
++                        self.stats["archive_members_skipped"] += 1
++                        return
++                    remaining -= len(value)
++                    self.stats["archive_bytes_expanded"] += len(value)
++                    unpack(value, name + "!gzip", depth + 1)
++                    return
++                except (OSError, EOFError, ValueError):
++                    self.stats["archive_errors"] += 1
++            binary = self._binary(data)
++            out.append((name, self._printable(data) if binary else data.decode("utf-8", errors="replace"), binary or depth > 0))
++        unpack(raw, "blob", 0)
++        return out
++
++
++    def _progress(self, message: str, force: bool = False) -> None:
++        t = time.monotonic()
++        if self.progress and (force or t - self._last_progress >= 0.25):
++            print(f"[{NAME}] {message}", file=sys.stderr, flush=True)
++            self._last_progress = t
++
+ 
+     def report(self, target: str, notes: list[str], started_at: str, duration: float, show: bool, evaluation: dict[str, Any] | None) -> dict[str, Any]:
+         type_counts = Counter(o.obj_type for o in self.objects.values())
+@@ -1102,6 +1276,7 @@
+                 detections.append(row)
+ 
+         secret_summary = []
++        order_index = {oid: i for i, oid in enumerate(self.commit_order)}
+         occ_by_sid: dict[str, list[Occurrence]] = defaultdict(list)
+         ev_by_sid: dict[str, list[LifecycleEvent]] = defaultdict(list)
+         for o in self.occurrences:
+@@ -1123,12 +1298,25 @@
+                 "last_observed": max(ts) if ts else None,
+                 "distinct_paths": sorted({o.path for o in occs}),
+                 "distinct_blobs": sorted({o.blob_oid for o in occs}),
+-                "lifecycle": [asdict(e) for e in sorted(ev_by_sid.get(sid, []), key=lambda x: (x.timestamp or 0, x.event))],
++                "lifecycle": [asdict(e) for e in sorted(ev_by_sid.get(sid, []), key=lambda x: (order_index.get(x.commit, -1), x.parent_commit or "", x.event))],
+                 "propagation_chain": self.propagation.get(sid, []),
++                "observation_note": "Commit timestamps are observations, not credential issue/expiry times; event order follows ancestry.",
++                "persistence_blob_count": len({o.blob_oid for o in occs}),
++                "observed_commit_count": len({o.commit for o in occs if o.commit}),
+             })
+ 
+         return {
+-            "schema": "gasld-report-v1",
++            "schema": "gasld-report-v2",
++            "model": self.model,
++            "score_interpretation": "Experimental exposure-priority score; not a compromise probability or credential-validity assessment.",
++            "warnings": self.warnings,
++            "coverage": {"scan_status_counts": dict(Counter(self.scan_status.values())), "blob_status": self.scan_status, "complete_text_scan": all(v == "scanned_text" for v in self.scan_status.values()), "reachability_roots": "all refs plus HEAD; reflogs excluded", "historical_definition": "association with a parsed non-HEAD commit", "current_definition": "committed HEAD snapshot; uncommitted working files excluded", "absence_meaning": "no matching accepted candidate under the configured detector", "max_blob_size": self.max_blob_size, "object_budget": self.object_budget, "max_commits": self.max_commits, "lineage_candidate_limit": self.max_lineage_candidates},
++            "git_state_snapshot": {oid: {"type": o.obj_type, "reachable": o.reachable, "historical": o.historical, "packed": o.packed} for oid, o in self.objects.items()},
++            "uncertain_transitions": self.uncertain_transitions,
++            "propagation_edges": self.propagation_edges,
++            "phase_seconds": self.phase_seconds,
++            "peak_python_memory_bytes": self.peak_memory_bytes,
++            "io_accounting": dict(self.stats),
+             "scanner": NAME,
+             "version": VERSION,
+             "started_at": started_at,
+@@ -1138,6 +1326,8 @@
+             "notes": notes,
+             "scope": self.scope,
+             "experimental_parameters": {
++                "min_content_confidence": self.min_confidence,
++                "fingerprint_normalization": "v2 exact extracted value; PEM CRLF normalized; spaces preserved",
+                 "content_weights": self.content_weights,
+                 "lineage_weights": self.lineage_weights,
+                 "lineage_threshold": self.lineage_threshold,
+@@ -1176,6 +1366,140 @@
+         }
+ 
+ 
++def compare_snapshots(previous: dict, current: dict) -> dict:
++    if previous.get("repository_path") != current.get("repository_path"):
++        raise ValueError("Snapshot comparison requires the same local repository path")
++    if previous.get("schema") != "gasld-report-v2" or "git_state_snapshot" not in previous:
++        raise ValueError("Previous report needs v2 git_state_snapshot evidence")
++    old_refs, new_refs = previous["repository"]["refs"], current["repository"]["refs"]
++    old, new = previous["git_state_snapshot"], current["git_state_snapshot"]
++    return {
++        "previous_started_at": previous["started_at"], "current_started_at": current["started_at"],
++        "removed_refs": [{"ref": ref, "previous_tip": old_refs[ref]} for ref in sorted(set(old_refs) - set(new_refs))],
++        "added_refs": [{"ref": ref, "tip": new_refs[ref]} for ref in sorted(set(new_refs) - set(old_refs))],
++        "moved_refs": [{"ref": ref, "previous_tip": old_refs[ref], "current_tip": new_refs[ref]} for ref in sorted(set(old_refs) & set(new_refs)) if old_refs[ref] != new_refs[ref]],
++        "became_unreachable": sorted(oid for oid in set(old) & set(new) if old[oid]["reachable"] and not new[oid]["reachable"]),
++        "no_longer_enumerated": sorted(set(old) - set(new)),
++        "evidence_note": "Observed differences between two scans. Ref movement is not proof of commit deletion; missing objects do not prove garbage collection or credential revocation. Reports should describe the same repository identity, not just a reused path."
++    }
++
++
++def classification_metrics(tp: int, fp: int, fn: int) -> dict[str, Any]:
++    precision = tp / (tp + fp) if tp + fp else None
++    recall = tp / (tp + fn) if tp + fn else None
++    f1 = 2 * tp / (2 * tp + fp + fn) if 2 * tp + fp + fn else None
++    return {"tp": tp, "fp": fp, "fn": fn, "precision": precision, "recall": recall, "f1": f1}
++
++
++def validate_manifest(data: dict[str, Any]) -> dict[str, dict[str, Any]]:
++    if not isinstance(data.get("items"), list):
++        raise ValueError("Ground truth requires items list")
++    labels = {}
++    for item in data["items"]:
++        if "expected_secret" in item and not isinstance(item["expected_secret"], bool):
++            raise ValueError("expected_secret must be boolean")
++        fp = item.get("fingerprint") or (fingerprint(str(item["value"])) if "value" in item else None)
++        if not fp or not re.fullmatch(r"[0-9a-f]{64}", fp):
++            raise ValueError("Ground truth needs a full SHA256 fingerprint or exact extracted value")
++        if fp in labels:
++            raise ValueError("Duplicate ground-truth credential; use occurrences for multiple locations")
++        if "relevance" in item and (isinstance(item["relevance"], bool) or not isinstance(item["relevance"], (int, float)) or not math.isfinite(item["relevance"]) or not 0 <= item["relevance"] <= 4):
++            raise ValueError("relevance must be a finite graded label in [0,4]")
++        labels[fp] = item
++    if data.get("unlisted_policy", "unjudged") not in {"unjudged", "negative"}:
++        raise ValueError("unlisted_policy must be unjudged or negative")
++    if data.get("unlisted_policy") == "negative" and data.get("complete") is not True:
++        raise ValueError("Closed-world negatives require complete=true independently verified ground truth")
++    return labels
++
++
++def ranking_metrics(ranked: list[str], labels: dict[str, dict[str, Any]], ks=(1, 5, 10)) -> dict[str, Any]:
++    grades = {fp: float(row["relevance"]) for fp, row in labels.items() if "relevance" in row}
++    positives = sum(g > 0 for g in grades.values())
++    ideal = sorted(grades.values(), reverse=True)
++    results = {}
++    for k in ks:
++        top = ranked[:k]
++        unjudged = sum(fp not in grades for fp in top)
++        relevant = sum(grades.get(fp, 0) > 0 for fp in top)
++        denom = k  # Missing results count as empty ranks, explicitly fixed-K.
++        dcg = sum((2 ** grades.get(fp, 0) - 1) / math.log2(i + 2) for i, fp in enumerate(top))
++        idcg = sum((2 ** g - 1) / math.log2(i + 2) for i, g in enumerate(ideal[:k]))
++        results[str(k)] = {"returned": len(top), "unjudged": unjudged,
++            "precision_at_k": relevant / denom if not unjudged else None,
++            "recall_at_k": relevant / positives if positives and not unjudged else None,
++            "ndcg_at_k": dcg / idcg if idcg and not unjudged else None,
++            "precision_lower_bound": relevant / denom,
++            "precision_upper_bound": (relevant + unjudged) / denom}
++    return {"unit": "unique secret fingerprint, max occurrence score; fixed K denominator", "known_relevant": positives, "metrics": results}
++
++
++def structured_metrics(predictions: list[dict], expected: list[dict], required: tuple[str, ...], complete: bool) -> dict:
++    # Exact schema projection. Expected rows must specify every matching field.
++    def key(row):
++        if any(k not in row for k in required):
++            raise ValueError("Structured ground truth requires: " + ", ".join(required))
++        return tuple(row[k] for k in required)
++    truth = {key(row) for row in expected}
++    predicted = {key(row) for row in predictions}
++    tp = len(truth & predicted)
++    unmatched = len(predicted - truth)
++    result = classification_metrics(tp, unmatched if complete else 0, len(truth - predicted))
++    result.update({"matching_fields": required, "complete_labels": complete, "unjudged_predictions": 0 if complete else unmatched})
++    if unmatched and not complete:
++        result["precision"] = result["f1"] = None
++    return result
++
++
++def evaluate_report(report: dict[str, Any], data: dict[str, Any]) -> dict[str, Any]:
++    labels = validate_manifest(data)
++    found = {d["fingerprint"] for d in report["secret_detections"]}
++    positives = {fp for fp, row in labels.items() if row.get("expected_secret", True)}
++    negatives = set(labels) - positives
++    extra = found - set(labels)
++    closed = data.get("unlisted_policy") == "negative"
++    tp, fp, fn = len(found & positives), len(found & negatives) + (len(extra) if closed else 0), len(positives - found)
++    result = classification_metrics(tp, fp, fn)
++    result.update({"tn": len(negatives - found), "unit": "unique credential fingerprint", "labelled_subset_precision": result["precision"], "unjudged_detections": sorted(extra) if not closed else [], "missing_known_secrets": sorted(positives - found), "unlisted_policy": data.get("unlisted_policy", "unjudged"), "ground_truth_complete": data.get("complete", False)})
++    if extra and not closed:
++        result["precision"] = result["f1"] = None
++    result["precision_lower_bound"] = tp / len(found) if found else None
++    result["precision_upper_bound"] = (tp + (len(extra) if not closed else 0)) / len(found) if found else None
++    ranked = []
++    for o in report["prioritized_findings"]:
++        if o["fingerprint"] not in ranked:
++            ranked.append(o["fingerprint"])
++    result["ranking"] = ranking_metrics(ranked, labels)
++    by_id = {s["secret_id"]: s["fingerprint"] for s in report["secret_identities"]}
++    specifications = [
++        ("events", [{**e, "fingerprint": by_id[e["secret_id"]]} for s in report["secret_identities"] for e in s["lifecycle"]], ("fingerprint", "event", "commit", "parent_commit", "path")),
++        ("lineage", report["lineage_edges"], ("source_blob", "target_blob", "source_commit", "target_commit", "source_path", "target_path")),
++        ("propagation", [{**e, "fingerprint": by_id[e["secret_id"]]} for e in report.get("propagation_edges", [])], ("fingerprint", "source_commit", "target_commit", "source_path", "target_path", "kind")),
++        ("occurrences", report["prioritized_findings"], ("fingerprint", "blob_oid", "commit", "path")),
++    ]
++    for name, predictions, fields in specifications:
++        if name in data:
++            result[name] = structured_metrics(predictions, data[name], fields, data.get(name + "_complete") is True)
++    if "identity_pairs" in data:
++        families = {row["fingerprint"]: row["family_id"] for row in report["secret_identities"]}
++        tp = fp = fn = tn = unresolved = 0
++        for pair in data["identity_pairs"]:
++            a, b = pair["a"], pair["b"]
++            expected = pair["same_family"]
++            if not isinstance(expected, bool):
++                raise ValueError("same_family must be boolean")
++            if a not in families or b not in families:
++                unresolved += 1
++                if expected:
++                    fn += 1
++                continue
++            predicted = families[a] == families[b]
++            tp += int(expected and predicted); fp += int(not expected and predicted)
++            fn += int(expected and not predicted); tn += int(not expected and not predicted)
++        result["identity_correlation"] = {**classification_metrics(tp, fp, fn), "tn": tn, "unresolved_pairs": unresolved, "unit": "independently labelled fingerprint pairs; missing positive member counts as FN"}
++    return result
++
++
+ def print_summary(report: dict[str, Any], max_findings: int) -> None:
+     repo = report["repository"]
+     stats = report["statistics"]
+@@ -1245,7 +1569,7 @@
+         print("-" * 84)
+         print(
+             f"TP={ev['tp']} FP={ev['fp']} TN={ev['tn']} FN={ev['fn']}  "
+-            f"Precision={ev['precision']:.4f} Recall={ev['recall']:.4f} F1={ev['f1']:.4f}"
++            f"Precision={ev['precision']} Recall={ev['recall']} F1={ev['f1']}"
+         )
+ 
+     print("\nEXPERIMENTAL PARAMETER NOTICE")
+@@ -1297,12 +1621,47 @@
+         "--ground-truth",
+         help='Optional manifest: {"items":[{"id":"S1","fingerprint":"sha256...","expected_secret":true}]}'
+     )
++    p.add_argument("--previous-report", help="Earlier v2 report from the same local repo, for ref/object retention transitions")
++    p.add_argument("--risk-config", help="Calibrated JSON config from research.py calibrate; loads risk_weights")
++    p.add_argument("--min-confidence", type=float, default=0.40)
++    p.add_argument("--model", choices=list("ABCDE"), default="E", help="A content; B +state; C +lineage; D +propagation; E +deletion lifecycle")
++    p.add_argument("--progress", action=argparse.BooleanOptionalAction, default=True)
++    p.add_argument("--max-lineage-candidates", type=int, default=64)
++    p.add_argument("--rules", help="Additional local JSON rules: rules=[name, regex, group, pattern_score]")
+     p.add_argument("--version", action="version", version=f"%(prog)s {VERSION}")
+     return p
+ 
+ 
++def run_engine(engine: Engine) -> None:
++    own_trace = not tracemalloc.is_tracing()
++    if own_trace:
++        tracemalloc.start()
++    phases = [("objects_and_state", engine.extract_objects_and_states),
++              ("graph", engine.build_graph), ("snapshots", engine.build_snapshots),
++              ("detection", engine.detect)]
++    if engine.model in {"C", "D", "E"}:
++        phases.append(("lineage", engine.infer_lineage))
++    phases += [("correlation", engine.correlate), ("lifecycle", engine.build_lifecycle)]
++    if engine.model in {"D", "E"}:
++        phases.append(("propagation", engine.analyze_propagation))
++    phases.append(("scoring", engine.score))
++    try:
++        for name, operation in phases:
++            engine._progress(name, force=True)
++            started = time.perf_counter()
++            operation()
++            engine.phase_seconds[name] = round(time.perf_counter() - started, 6)
++        engine.peak_memory_bytes = tracemalloc.get_traced_memory()[1]
++    finally:
++        if own_trace:
++            tracemalloc.stop()
++
++
+ def main() -> int:
+     args = parser().parse_args()
++    if not math.isfinite(args.min_confidence) or not 0 <= args.min_confidence <= 1 or args.max_lineage_candidates < 1:
++        print("ERROR: confidence must be in [0,1]; lineage candidate limit must be positive", file=sys.stderr)
++        return 2
+     if args.max_findings < 0 or args.object_budget < 0 or args.max_commits < 0:
+         print("ERROR: numeric limits must be >= 0", file=sys.stderr)
+         return 2
+@@ -1317,6 +1676,14 @@
+     except (ValueError, argparse.ArgumentTypeError) as exc:
+         print(f"ERROR: {exc}", file=sys.stderr)
+         return 2
++
++    if args.risk_config:
++        try:
++            config = json.loads(Path(args.risk_config).read_text())
++            risk_weights = parse_weights(",".join(f"{k}={v}" for k, v in config["risk_weights"].items()), tuple(RISK_WEIGHTS_DEFAULT))
++        except (OSError, ValueError, KeyError, argparse.ArgumentTypeError) as exc:
++            print(f"ERROR: invalid risk config: {exc}", file=sys.stderr)
++            return 2
+ 
+     started_at = now_iso()
+     start = time.perf_counter()
+@@ -1337,36 +1704,33 @@
+             risk_weights=risk_weights,
+             lineage_threshold=args.lineage_threshold,
+             rotation_threshold=args.rotation_threshold,
++            min_confidence=args.min_confidence, model=args.model, progress=args.progress,
++            max_lineage_candidates=args.max_lineage_candidates,
++            custom_rules=Path(args.rules) if args.rules else None,
+         )
+ 
+-        # GASLD methodology pipeline.
+-        engine.extract_objects_and_states()  # object extraction + reachability/storage state
+-        engine.build_graph()                 # commit/tree/blob/tag graph
+-        engine.build_snapshots()             # current/history + deletion/removal transitions
+-        engine.infer_lineage()               # content/path/commit/temporal lineage evidence
+-        engine.detect()                      # pattern + entropy + context
+-        engine.correlate()                   # exact identity + modified/rotated families
+-        engine.build_lifecycle()             # introduction/persistence/removal/deletion/retention
+-        engine.analyze_propagation()         # same secret across locations
+-        engine.score()                       # Git-aware risk + prioritization
++        run_engine(engine)
+         evaluation = engine.evaluate(Path(args.ground_truth).expanduser().resolve() if args.ground_truth else None)
+ 
+         report = engine.report(
+             args.repo, notes, started_at, time.perf_counter() - start,
+             args.show_secrets, evaluation
+         )
++        if args.previous_report:
++            prior = json.loads(Path(args.previous_report).read_text())
++            report["repository_transitions"] = compare_snapshots(prior, report)
+         out = Path(args.output).expanduser().resolve()
+         out.parent.mkdir(parents=True, exist_ok=True)
+-        out.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
++        out.write_text(json.dumps(report, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
+ 
+         if args.format == "json":
+-            print(json.dumps(report, indent=2, ensure_ascii=False))
++            print(json.dumps(report, indent=2, ensure_ascii=True))
+         else:
+             print_summary(report, args.max_findings)
+             print(f"\nReport written to: {out}")
+         return 0
+ 
+-    except (GitError, FileNotFoundError, ValueError, json.JSONDecodeError) as exc:
++    except (GitError, OSError, ValueError, KeyError, re.error, RecursionError) as exc:
+         print(f"ERROR: {exc}", file=sys.stderr)
+         return 2
+     except KeyboardInterrupt:

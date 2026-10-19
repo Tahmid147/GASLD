@@ -1,0 +1,468 @@
+{
+  "schema": "gasld-report-v2",
+  "model": "E",
+  "score_interpretation": "Experimental exposure-priority score; not a compromise probability or credential-validity assessment.",
+  "warnings": [],
+  "coverage": {
+    "scan_status_counts": {
+      "scanned_text": 3
+    },
+    "blob_status": {
+      "0f29df8f6768f37a758731b957f4206fd7ad5e36": "scanned_text",
+      "99d137ac97fbbec36464a6e61f81ee724e5dbd5b": "scanned_text",
+      "f0fb835359d431b88b7efd6d9d9c30616d48f44b": "scanned_text"
+    },
+    "complete_text_scan": true,
+    "reachability_roots": "all refs plus HEAD; reflogs excluded",
+    "historical_definition": "association with a parsed non-HEAD commit",
+    "current_definition": "committed HEAD snapshot; uncommitted working files excluded",
+    "absence_meaning": "no matching accepted candidate under the configured detector",
+    "max_blob_size": 10485760,
+    "object_budget": 0,
+    "max_commits": 0,
+    "lineage_candidate_limit": 64
+  },
+  "git_state_snapshot": {
+    "0732a76a996b4f25e8d222a4ca4ea441be4e2f05": {
+      "type": "tree",
+      "reachable": true,
+      "historical": true,
+      "packed": false
+    },
+    "0f29df8f6768f37a758731b957f4206fd7ad5e36": {
+      "type": "blob",
+      "reachable": true,
+      "historical": true,
+      "packed": false
+    },
+    "112f77549bdb1146e6b239ff9374777e52fdfd14": {
+      "type": "commit",
+      "reachable": true,
+      "historical": true,
+      "packed": false
+    },
+    "4165492d5aabe2f8f1f3b8e1b4adf529080ca1f1": {
+      "type": "tree",
+      "reachable": true,
+      "historical": true,
+      "packed": false
+    },
+    "4b825dc642cb6eb9a060e54bf8d69288fbee4904": {
+      "type": "tree",
+      "reachable": true,
+      "historical": false,
+      "packed": false
+    },
+    "875a9b02e58f166c48bc1ed5b31032d937c2ba50": {
+      "type": "commit",
+      "reachable": true,
+      "historical": true,
+      "packed": false
+    },
+    "99d137ac97fbbec36464a6e61f81ee724e5dbd5b": {
+      "type": "blob",
+      "reachable": true,
+      "historical": true,
+      "packed": false
+    },
+    "a676badd4f34efad6da0a4733422437363519d8d": {
+      "type": "commit",
+      "reachable": true,
+      "historical": true,
+      "packed": false
+    },
+    "ec6b12f6d5df302febbc1a8a1bcf3f13224244b4": {
+      "type": "tree",
+      "reachable": true,
+      "historical": true,
+      "packed": false
+    },
+    "f0fb835359d431b88b7efd6d9d9c30616d48f44b": {
+      "type": "blob",
+      "reachable": true,
+      "historical": true,
+      "packed": false
+    },
+    "fa54fd2373383771ad9c0b0a92a18533715caad2": {
+      "type": "commit",
+      "reachable": true,
+      "historical": false,
+      "packed": false
+    }
+  },
+  "uncertain_transitions": [],
+  "propagation_edges": [],
+  "phase_seconds": {
+    "objects_and_state": 0.034023,
+    "graph": 0.015834,
+    "snapshots": 6.2e-05,
+    "detection": 0.009794,
+    "lineage": 0.000844,
+    "correlation": 4.8e-05,
+    "lifecycle": 0.001187,
+    "propagation": 1.7e-05,
+    "scoring": 0.000359
+  },
+  "peak_python_memory_bytes": 110624,
+  "io_accounting": {
+    "structural_objects_read": 8,
+    "structural_bytes_read": 1050,
+    "objects_scanned": 3,
+    "bytes_scanned": 152,
+    "blob_reads_total": 3,
+    "blob_bytes_read_total": 152,
+    "accepted_matches": 2
+  },
+  "scanner": "GASLD",
+  "version": "0.2.0-research",
+  "started_at": "2026-09-08T14:54:59.071772+00:00",
+  "duration_seconds": 0.070647,
+  "target": "/workspace/scratch/52ecfc40de1e/demo-validation/repo",
+  "repository_path": "/workspace/scratch/52ecfc40de1e/demo-validation/repo",
+  "notes": [],
+  "scope": "all",
+  "experimental_parameters": {
+    "min_content_confidence": 0.4,
+    "fingerprint_normalization": "v2 exact extracted value; PEM CRLF normalized; spaces preserved",
+    "content_weights": {
+      "pattern": 0.5,
+      "entropy": 0.2,
+      "context": 0.3
+    },
+    "lineage_weights": {
+      "content": 0.45,
+      "path": 0.25,
+      "commit": 0.2,
+      "temporal": 0.1
+    },
+    "lineage_threshold": 0.7,
+    "rotation_threshold": 0.82,
+    "risk_weights": {
+      "content": 0.3,
+      "reachability": 0.15,
+      "deletion": 0.15,
+      "historical": 0.1,
+      "lineage": 0.15,
+      "propagation": 0.15
+    },
+    "risk_thresholds": {
+      "critical": 0.85,
+      "high": 0.7,
+      "medium": 0.5
+    },
+    "warning": "Weights and thresholds are experimental parameters, not scientifically established constants."
+  },
+  "repository": {
+    "head": "fa54fd2373383771ad9c0b0a92a18533715caad2",
+    "object_format": "sha1",
+    "refs": {
+      "refs/heads/main": "fa54fd2373383771ad9c0b0a92a18533715caad2"
+    },
+    "object_counts": {
+      "tree": 4,
+      "blob": 3,
+      "commit": 4
+    },
+    "state_counts": {
+      "reachable": 11,
+      "unreachable": 0,
+      "current": 2,
+      "historical": 9,
+      "packed": 0
+    },
+    "graph_edge_count": 10,
+    "commits_analyzed": 4,
+    "path_change_count": 4
+  },
+  "statistics": {
+    "objects_scanned": 3,
+    "bytes_scanned": 152,
+    "bytes_scanned_human": "152 B",
+    "binary_blobs": 0,
+    "skipped_large_blobs": 0,
+    "lineage_edges": 1,
+    "unique_secrets": 1,
+    "occurrences": 2,
+    "lifecycle_events": 4
+  },
+  "lineage_edges": [
+    {
+      "source_blob": "f0fb835359d431b88b7efd6d9d9c30616d48f44b",
+      "target_blob": "0f29df8f6768f37a758731b957f4206fd7ad5e36",
+      "source_path": "config.env",
+      "target_path": "config.env",
+      "source_commit": "a676badd4f34efad6da0a4733422437363519d8d",
+      "target_commit": "875a9b02e58f166c48bc1ed5b31032d937c2ba50",
+      "content_similarity": 0.950354609929078,
+      "path_similarity": 1.0,
+      "commit_similarity": 1.0,
+      "temporal_similarity": 0.9889503892939223,
+      "confidence": 0.976555
+    }
+  ],
+  "secret_detections": [
+    {
+      "detector": "research_secret",
+      "value": "RES\u20263D4 [REDACTED]",
+      "normalized": "RES\u20263D4 [REDACTED]",
+      "fingerprint": "5a835b14ea050405930c07c0c2fa1b885c4e9173e40230ddcc06f12057492b0f",
+      "line": 1,
+      "column": 10,
+      "pattern_score": 1.0,
+      "entropy_score": 0.268366,
+      "context_score": 0.77,
+      "content_confidence": 0.784673,
+      "binary_extracted": false,
+      "context_key": "api_key",
+      "artifact": "blob",
+      "blob_oid": "0f29df8f6768f37a758731b957f4206fd7ad5e36"
+    },
+    {
+      "detector": "research_secret",
+      "value": "RES\u20263D4 [REDACTED]",
+      "normalized": "RES\u20263D4 [REDACTED]",
+      "fingerprint": "5a835b14ea050405930c07c0c2fa1b885c4e9173e40230ddcc06f12057492b0f",
+      "line": 1,
+      "column": 10,
+      "pattern_score": 1.0,
+      "entropy_score": 0.268366,
+      "context_score": 0.77,
+      "content_confidence": 0.784673,
+      "binary_extracted": false,
+      "context_key": "api_key",
+      "artifact": "blob",
+      "blob_oid": "f0fb835359d431b88b7efd6d9d9c30616d48f44b"
+    }
+  ],
+  "secret_identities": [
+    {
+      "secret_id": "S-5a835b14ea050405930c",
+      "family_id": "F-0001",
+      "detector": "research_secret",
+      "fingerprint": "5a835b14ea050405930c07c0c2fa1b885c4e9173e40230ddcc06f12057492b0f",
+      "secret_value": "RES\u20263D4 [REDACTED]",
+      "first_observed": 1735732800,
+      "last_observed": 1735819200,
+      "distinct_paths": [
+        "config.env"
+      ],
+      "distinct_blobs": [
+        "0f29df8f6768f37a758731b957f4206fd7ad5e36",
+        "f0fb835359d431b88b7efd6d9d9c30616d48f44b"
+      ],
+      "lifecycle": [
+        {
+          "secret_id": "S-5a835b14ea050405930c",
+          "event": "introduction",
+          "commit": "a676badd4f34efad6da0a4733422437363519d8d",
+          "timestamp": 1735732800,
+          "path": "config.env",
+          "blob_oid": "f0fb835359d431b88b7efd6d9d9c30616d48f44b",
+          "details": "Accepted candidate absent from examined predecessor at this path.",
+          "confidence": 1.0,
+          "parent_commit": null,
+          "related_path": null,
+          "evidence_status": "observed"
+        },
+        {
+          "secret_id": "S-5a835b14ea050405930c",
+          "event": "persistence",
+          "commit": "875a9b02e58f166c48bc1ed5b31032d937c2ba50",
+          "timestamp": 1735819200,
+          "path": "config.env",
+          "blob_oid": "0f29df8f6768f37a758731b957f4206fd7ad5e36",
+          "details": "Identical credential persists.",
+          "confidence": 1.0,
+          "parent_commit": "a676badd4f34efad6da0a4733422437363519d8d",
+          "related_path": null,
+          "evidence_status": "observed"
+        },
+        {
+          "secret_id": "S-5a835b14ea050405930c",
+          "event": "secret_removed",
+          "commit": "112f77549bdb1146e6b239ff9374777e52fdfd14",
+          "timestamp": 1735905600,
+          "path": "config.env",
+          "blob_oid": "0f29df8f6768f37a758731b957f4206fd7ad5e36",
+          "details": "No matching accepted credential in examined successor text. Retained locally: reachable=True, packed=False.",
+          "confidence": 1.0,
+          "parent_commit": "875a9b02e58f166c48bc1ed5b31032d937c2ba50",
+          "related_path": null,
+          "evidence_status": "observed"
+        },
+        {
+          "secret_id": "S-5a835b14ea050405930c",
+          "event": "file_deleted_after_removal",
+          "commit": "fa54fd2373383771ad9c0b0a92a18533715caad2",
+          "timestamp": 1735992000,
+          "path": "config.env",
+          "blob_oid": "0f29df8f6768f37a758731b957f4206fd7ad5e36",
+          "details": "Previously tracked credential removed earlier; associated file now deleted. Retained locally: reachable=True, packed=False.",
+          "confidence": 1.0,
+          "parent_commit": "112f77549bdb1146e6b239ff9374777e52fdfd14",
+          "related_path": null,
+          "evidence_status": "observed"
+        }
+      ],
+      "propagation_chain": [
+        {
+          "commit": "a676badd4f34efad6da0a4733422437363519d8d",
+          "path": "config.env",
+          "blob_oid": "f0fb835359d431b88b7efd6d9d9c30616d48f44b",
+          "timestamp": 1735732800,
+          "reachable": true
+        },
+        {
+          "commit": "875a9b02e58f166c48bc1ed5b31032d937c2ba50",
+          "path": "config.env",
+          "blob_oid": "0f29df8f6768f37a758731b957f4206fd7ad5e36",
+          "timestamp": 1735819200,
+          "reachable": true
+        }
+      ],
+      "observation_note": "Commit timestamps are observations, not credential issue/expiry times; event order follows ancestry.",
+      "persistence_blob_count": 2,
+      "observed_commit_count": 2
+    }
+  ],
+  "prioritized_findings": [
+    {
+      "secret_id": "S-5a835b14ea050405930c",
+      "family_id": "F-0001",
+      "detector": "research_secret",
+      "fingerprint": "5a835b14ea050405930c07c0c2fa1b885c4e9173e40230ddcc06f12057492b0f",
+      "blob_oid": "0f29df8f6768f37a758731b957f4206fd7ad5e36",
+      "path": "config.env",
+      "commit": "875a9b02e58f166c48bc1ed5b31032d937c2ba50",
+      "timestamp": 1735819200,
+      "current": false,
+      "reachable": true,
+      "historical": true,
+      "packed": false,
+      "content_confidence": 0.784673,
+      "reachability_score": 0.82,
+      "deletion_score": 1.0,
+      "historical_score": 0.498974,
+      "lineage_score": 0.976555,
+      "propagation_score": 0.0,
+      "final_risk": 0.704783,
+      "risk_class": "high",
+      "evidence": [
+        "Current/historical labels describe this commit occurrence; reachability/storage describe its blob.",
+        "Secret-bearing object is reachable from refs/history.",
+        "Deletion/removal evidence=1.00."
+      ]
+    },
+    {
+      "secret_id": "S-5a835b14ea050405930c",
+      "family_id": "F-0001",
+      "detector": "research_secret",
+      "fingerprint": "5a835b14ea050405930c07c0c2fa1b885c4e9173e40230ddcc06f12057492b0f",
+      "blob_oid": "f0fb835359d431b88b7efd6d9d9c30616d48f44b",
+      "path": "config.env",
+      "commit": "a676badd4f34efad6da0a4733422437363519d8d",
+      "timestamp": 1735732800,
+      "current": false,
+      "reachable": true,
+      "historical": true,
+      "packed": false,
+      "content_confidence": 0.784673,
+      "reachability_score": 0.82,
+      "deletion_score": 1.0,
+      "historical_score": 0.498974,
+      "lineage_score": 0.976555,
+      "propagation_score": 0.0,
+      "final_risk": 0.704783,
+      "risk_class": "high",
+      "evidence": [
+        "Current/historical labels describe this commit occurrence; reachability/storage describe its blob.",
+        "Secret-bearing object is reachable from refs/history.",
+        "Deletion/removal evidence=1.00."
+      ]
+    }
+  ],
+  "ground_truth_evaluation": {
+    "tp": 1,
+    "fp": 0,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "tn": 0,
+    "unit": "unique credential fingerprint",
+    "labelled_subset_precision": 1.0,
+    "unjudged_detections": [],
+    "missing_known_secrets": [],
+    "unlisted_policy": "negative",
+    "ground_truth_complete": true,
+    "precision_lower_bound": 1.0,
+    "precision_upper_bound": 1.0,
+    "ranking": {
+      "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+      "known_relevant": 1,
+      "metrics": {
+        "1": {
+          "returned": 1,
+          "unjudged": 0,
+          "precision_at_k": 1.0,
+          "recall_at_k": 1.0,
+          "ndcg_at_k": 1.0,
+          "precision_lower_bound": 1.0,
+          "precision_upper_bound": 1.0
+        },
+        "5": {
+          "returned": 1,
+          "unjudged": 0,
+          "precision_at_k": 0.2,
+          "recall_at_k": 1.0,
+          "ndcg_at_k": 1.0,
+          "precision_lower_bound": 0.2,
+          "precision_upper_bound": 0.2
+        },
+        "10": {
+          "returned": 1,
+          "unjudged": 0,
+          "precision_at_k": 0.1,
+          "recall_at_k": 1.0,
+          "ndcg_at_k": 1.0,
+          "precision_lower_bound": 0.1,
+          "precision_upper_bound": 0.1
+        }
+      }
+    },
+    "events": {
+      "tp": 4,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matching_fields": [
+        "fingerprint",
+        "event",
+        "commit",
+        "parent_commit",
+        "path"
+      ],
+      "complete_labels": true,
+      "unjudged_predictions": 0
+    },
+    "occurrences": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "matching_fields": [
+        "fingerprint",
+        "blob_oid",
+        "commit",
+        "path"
+      ],
+      "complete_labels": true,
+      "unjudged_predictions": 0
+    }
+  },
+  "secrets_redacted": true
+}

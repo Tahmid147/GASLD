@@ -1,0 +1,5114 @@
+{
+  "schema": "gasld-experiments-v1",
+  "seed": 42,
+  "repeats": 3,
+  "repository": "/workspace/scratch/52ecfc40de1e/demo-validation/repo",
+  "dataset_id": "four-commit-synthetic-demo",
+  "scanner_version": "0.2.0-research",
+  "scanner_source_sha256": "a3511572369823c47f87b5c638026b83651e372a4011446ac2433e43dc3bfc03",
+  "ground_truth_sha256": "345685be914e03f939dd2c6f79831156ccac0e824ecdc8bc00bf1e49f9356cd3",
+  "python_version": "3.12.13 (main, Aug  7 2026, 02:25:39) [Clang 22.1.3 ]",
+  "git_version": "git version 2.51.1",
+  "notes": [
+    "A=content; B adds reachability/history; C adds inferred lineage; D adds propagation; E adds deletion/removal evidence.",
+    "All ablations share detector and object scope. Detection counts may be identical; ranking/relationship metrics measure added value.",
+    "Shared graph/snapshot/lifecycle infrastructure is retained in all models. These are component/score ablations, not optimized standalone scanner speed comparisons.",
+    "Budgets constrain detection reads before lineage; structural traversal still visits all acquired objects.",
+    "Memory is peak traced Python allocations, excludes Git subprocess/native memory. Profiling overhead is included in all timings.",
+    "Bootstrap intervals describe repeated timings on this machine; they do not establish generalization or statistical superiority.",
+    "Externally supplied labels must be independently verified. Synthetic results do not establish real-world ranking quality."
+  ],
+  "summary": {
+    "baseline_current": {
+      "duration_seconds": {
+        "mean": 0.04838,
+        "bootstrap_95_percent_interval": [
+          0.042011,
+          0.058823
+        ]
+      },
+      "recall": 0.0,
+      "precision": null,
+      "peak_python_memory_bytes_max": 108673,
+      "blob_reads": 0,
+      "recall_difference_from_full": -1.0
+    },
+    "baseline_reachable": {
+      "duration_seconds": {
+        "mean": 0.059047666666666665,
+        "bootstrap_95_percent_interval": [
+          0.049201,
+          0.072918
+        ]
+      },
+      "recall": 1.0,
+      "precision": 1.0,
+      "peak_python_memory_bytes_max": 108529,
+      "blob_reads": 3,
+      "recall_difference_from_full": 0.0
+    },
+    "ablation_A": {
+      "duration_seconds": {
+        "mean": 0.07154866666666666,
+        "bootstrap_95_percent_interval": [
+          0.053173,
+          0.101668
+        ]
+      },
+      "recall": 1.0,
+      "precision": 1.0,
+      "peak_python_memory_bytes_max": 108137,
+      "blob_reads": 3,
+      "recall_difference_from_full": 0.0
+    },
+    "ablation_B": {
+      "duration_seconds": {
+        "mean": 0.07785966666666666,
+        "bootstrap_95_percent_interval": [
+          0.043499,
+          0.105964
+        ]
+      },
+      "recall": 1.0,
+      "precision": 1.0,
+      "peak_python_memory_bytes_max": 110824,
+      "blob_reads": 3,
+      "recall_difference_from_full": 0.0
+    },
+    "ablation_C": {
+      "duration_seconds": {
+        "mean": 0.04807433333333333,
+        "bootstrap_95_percent_interval": [
+          0.043466,
+          0.051057
+        ]
+      },
+      "recall": 1.0,
+      "precision": 1.0,
+      "peak_python_memory_bytes_max": 108473,
+      "blob_reads": 3,
+      "recall_difference_from_full": 0.0
+    },
+    "ablation_D": {
+      "duration_seconds": {
+        "mean": 0.046774666666666666,
+        "bootstrap_95_percent_interval": [
+          0.045108,
+          0.049259
+        ]
+      },
+      "recall": 1.0,
+      "precision": 1.0,
+      "peak_python_memory_bytes_max": 108665,
+      "blob_reads": 3,
+      "recall_difference_from_full": 0.0
+    },
+    "ablation_E": {
+      "duration_seconds": {
+        "mean": 0.06415266666666666,
+        "bootstrap_95_percent_interval": [
+          0.053206,
+          0.080769
+        ]
+      },
+      "recall": 1.0,
+      "precision": 1.0,
+      "peak_python_memory_bytes_max": 108217,
+      "blob_reads": 3,
+      "recall_difference_from_full": 0.0
+    },
+    "budget_1": {
+      "duration_seconds": {
+        "mean": 0.064097,
+        "bootstrap_95_percent_interval": [
+          0.049936,
+          0.080303
+        ]
+      },
+      "recall": 1.0,
+      "precision": 1.0,
+      "peak_python_memory_bytes_max": 108657,
+      "blob_reads": 1,
+      "recall_difference_from_full": 0.0
+    },
+    "budget_2": {
+      "duration_seconds": {
+        "mean": 0.10944866666666667,
+        "bootstrap_95_percent_interval": [
+          0.05604,
+          0.15512533333333334
+        ]
+      },
+      "recall": 1.0,
+      "precision": 1.0,
+      "peak_python_memory_bytes_max": 108713,
+      "blob_reads": 2,
+      "recall_difference_from_full": 0.0
+    },
+    "budget_4": {
+      "duration_seconds": {
+        "mean": 0.07447966666666667,
+        "bootstrap_95_percent_interval": [
+          0.057083,
+          0.107369
+        ]
+      },
+      "recall": 1.0,
+      "precision": 1.0,
+      "peak_python_memory_bytes_max": 108665,
+      "blob_reads": 3,
+      "recall_difference_from_full": 0.0
+    },
+    "confidence_0.6": {
+      "duration_seconds": {
+        "mean": 0.059803,
+        "bootstrap_95_percent_interval": [
+          0.055087,
+          0.068418
+        ]
+      },
+      "recall": 1.0,
+      "precision": 1.0,
+      "peak_python_memory_bytes_max": 108769,
+      "blob_reads": 3,
+      "recall_difference_from_full": 0.0
+    },
+    "confidence_0.8": {
+      "duration_seconds": {
+        "mean": 0.052289666666666665,
+        "bootstrap_95_percent_interval": [
+          0.043706,
+          0.066664
+        ]
+      },
+      "recall": 0.0,
+      "precision": null,
+      "peak_python_memory_bytes_max": 108601,
+      "blob_reads": 3,
+      "recall_difference_from_full": -1.0
+    },
+    "lineage_0.6": {
+      "duration_seconds": {
+        "mean": 0.058904,
+        "bootstrap_95_percent_interval": [
+          0.052149,
+          0.06525533333333333
+        ]
+      },
+      "recall": 1.0,
+      "precision": 1.0,
+      "peak_python_memory_bytes_max": 108761,
+      "blob_reads": 3,
+      "recall_difference_from_full": 0.0
+    },
+    "lineage_0.8": {
+      "duration_seconds": {
+        "mean": 0.060608666666666665,
+        "bootstrap_95_percent_interval": [
+          0.048515,
+          0.068112
+        ]
+      },
+      "recall": 1.0,
+      "precision": 1.0,
+      "peak_python_memory_bytes_max": 108665,
+      "blob_reads": 3,
+      "recall_difference_from_full": 0.0
+    }
+  },
+  "runs": [
+    {
+      "case": "ablation_B",
+      "repeat": 0,
+      "scope": "all",
+      "model": "B",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.105964,
+      "peak_python_memory_bytes": 110824,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.083245,
+        "graph": 0.013093,
+        "snapshots": 6.6e-05,
+        "detection": 0.008129,
+        "correlation": 6.7e-05,
+        "lifecycle": 0.000946,
+        "scoring": 0.000209
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "baseline_reachable",
+      "repeat": 0,
+      "scope": "reachable",
+      "model": "A",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.072918,
+      "peak_python_memory_bytes": 107673,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.058252,
+        "graph": 0.007976,
+        "snapshots": 5.2e-05,
+        "detection": 0.005632,
+        "correlation": 3.8e-05,
+        "lifecycle": 0.000607,
+        "scoring": 0.000226
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "ablation_B",
+      "repeat": 1,
+      "scope": "all",
+      "model": "B",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.084116,
+      "peak_python_memory_bytes": 108161,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.054021,
+        "graph": 0.02347,
+        "snapshots": 5.5e-05,
+        "detection": 0.005634,
+        "correlation": 3.7e-05,
+        "lifecycle": 0.000481,
+        "scoring": 0.000245
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "budget_2",
+      "repeat": 2,
+      "scope": "all",
+      "model": "E",
+      "budget": 2,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.079236,
+      "peak_python_memory_bytes": 108305,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 2,
+        "bytes_scanned": 81,
+        "blob_reads_total": 2,
+        "blob_bytes_read_total": 81,
+        "accepted_matches": 1
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.053712,
+        "graph": 0.017753,
+        "snapshots": 5.4e-05,
+        "detection": 0.00565,
+        "lineage": 0.000379,
+        "correlation": 3.4e-05,
+        "lifecycle": 0.001228,
+        "propagation": 2.2e-05,
+        "scoring": 0.000228
+      },
+      "coverage": {
+        "scanned_text": 2,
+        "budget_excluded": 1
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 2,
+          "fp": 1,
+          "fn": 2,
+          "precision": 0.6666666666666666,
+          "recall": 0.5,
+          "f1": 0.5714285714285714,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "lineage_0.6",
+      "repeat": 1,
+      "scope": "all",
+      "model": "E",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.6,
+      "duration_seconds": 0.052149,
+      "peak_python_memory_bytes": 108761,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.027283,
+        "graph": 0.014944,
+        "snapshots": 0.000164,
+        "detection": 0.006799,
+        "lineage": 0.001261,
+        "correlation": 8.1e-05,
+        "lifecycle": 0.000905,
+        "propagation": 2e-05,
+        "scoring": 0.000434
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "ablation_E",
+      "repeat": 0,
+      "scope": "all",
+      "model": "E",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.080769,
+      "peak_python_memory_bytes": 108217,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.063536,
+        "graph": 0.009311,
+        "snapshots": 5e-05,
+        "detection": 0.006551,
+        "lineage": 0.00046,
+        "correlation": 3.5e-05,
+        "lifecycle": 0.000426,
+        "propagation": 1.6e-05,
+        "scoring": 0.000246
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "lineage_0.8",
+      "repeat": 0,
+      "scope": "all",
+      "model": "E",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.8,
+      "duration_seconds": 0.068112,
+      "peak_python_memory_bytes": 108225,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.028241,
+        "graph": 0.030902,
+        "snapshots": 0.000128,
+        "detection": 0.00742,
+        "lineage": 0.000429,
+        "correlation": 0.000154,
+        "lifecycle": 0.00046,
+        "propagation": 1.6e-05,
+        "scoring": 0.000221
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "budget_2",
+      "repeat": 1,
+      "scope": "all",
+      "model": "E",
+      "budget": 2,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.05604,
+      "peak_python_memory_bytes": 108713,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 2,
+        "bytes_scanned": 81,
+        "blob_reads_total": 2,
+        "blob_bytes_read_total": 81,
+        "accepted_matches": 1
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.030284,
+        "graph": 0.018907,
+        "snapshots": 5.2e-05,
+        "detection": 0.005326,
+        "lineage": 0.000199,
+        "correlation": 5.4e-05,
+        "lifecycle": 0.000947,
+        "propagation": 1.4e-05,
+        "scoring": 0.000128
+      },
+      "coverage": {
+        "scanned_text": 2,
+        "budget_excluded": 1
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 2,
+          "fp": 1,
+          "fn": 2,
+          "precision": 0.6666666666666666,
+          "recall": 0.5,
+          "f1": 0.5714285714285714,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "baseline_reachable",
+      "repeat": 1,
+      "scope": "reachable",
+      "model": "A",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.049201,
+      "peak_python_memory_bytes": 108529,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.030184,
+        "graph": 0.01133,
+        "snapshots": 4.9e-05,
+        "detection": 0.006879,
+        "correlation": 3.2e-05,
+        "lifecycle": 0.000463,
+        "scoring": 0.000177
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "confidence_0.8",
+      "repeat": 0,
+      "scope": "all",
+      "model": "E",
+      "budget": 0,
+      "min_confidence": 0.8,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.043706,
+      "peak_python_memory_bytes": 108145,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "rejected_candidates": 4,
+        "accepted_matches": 0
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.028841,
+        "graph": 0.008565,
+        "snapshots": 5.1e-05,
+        "detection": 0.00525,
+        "lineage": 0.000412,
+        "correlation": 1.8e-05,
+        "lifecycle": 0.000393,
+        "propagation": 9e-06,
+        "scoring": 4.2e-05
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": null,
+        "unjudged_detections": [],
+        "missing_known_secrets": [
+          "5a835b14ea050405930c07c0c2fa1b885c4e9173e40230ddcc06f12057492b0f"
+        ],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": null,
+        "precision_upper_bound": null,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 0,
+              "unjudged": 0,
+              "precision_at_k": 0.0,
+              "recall_at_k": 0.0,
+              "ndcg_at_k": 0.0,
+              "precision_lower_bound": 0.0,
+              "precision_upper_bound": 0.0
+            },
+            "5": {
+              "returned": 0,
+              "unjudged": 0,
+              "precision_at_k": 0.0,
+              "recall_at_k": 0.0,
+              "ndcg_at_k": 0.0,
+              "precision_lower_bound": 0.0,
+              "precision_upper_bound": 0.0
+            },
+            "10": {
+              "returned": 0,
+              "unjudged": 0,
+              "precision_at_k": 0.0,
+              "recall_at_k": 0.0,
+              "ndcg_at_k": 0.0,
+              "precision_lower_bound": 0.0,
+              "precision_upper_bound": 0.0
+            }
+          }
+        },
+        "events": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 4,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "budget_1",
+      "repeat": 1,
+      "scope": "all",
+      "model": "E",
+      "budget": 1,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.062052,
+      "peak_python_memory_bytes": 108657,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 1,
+        "bytes_scanned": 70,
+        "blob_reads_total": 1,
+        "blob_bytes_read_total": 70,
+        "accepted_matches": 1
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.039542,
+        "graph": 0.0143,
+        "snapshots": 7.2e-05,
+        "detection": 0.007308,
+        "lineage": 3.9e-05,
+        "correlation": 3.1e-05,
+        "lifecycle": 0.000446,
+        "propagation": 1.4e-05,
+        "scoring": 0.000148
+      },
+      "coverage": {
+        "scanned_text": 1,
+        "budget_excluded": 2
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 1,
+          "fp": 1,
+          "fn": 3,
+          "precision": 0.5,
+          "recall": 0.25,
+          "f1": 0.3333333333333333,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "ablation_B",
+      "repeat": 2,
+      "scope": "all",
+      "model": "B",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.043499,
+      "peak_python_memory_bytes": 108593,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.029103,
+        "graph": 0.008243,
+        "snapshots": 4.9e-05,
+        "detection": 0.005255,
+        "correlation": 3.3e-05,
+        "lifecycle": 0.000479,
+        "scoring": 0.000221
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "budget_4",
+      "repeat": 2,
+      "scope": "all",
+      "model": "E",
+      "budget": 4,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.057083,
+      "peak_python_memory_bytes": 108249,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.030658,
+        "graph": 0.008229,
+        "snapshots": 5.2e-05,
+        "detection": 0.016946,
+        "lineage": 0.000416,
+        "correlation": 3.2e-05,
+        "lifecycle": 0.000419,
+        "propagation": 1.4e-05,
+        "scoring": 0.0002
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "budget_1",
+      "repeat": 0,
+      "scope": "all",
+      "model": "E",
+      "budget": 1,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.080303,
+      "peak_python_memory_bytes": 108121,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 1,
+        "bytes_scanned": 70,
+        "blob_reads_total": 1,
+        "blob_bytes_read_total": 70,
+        "accepted_matches": 1
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.02731,
+        "graph": 0.009846,
+        "snapshots": 5.2e-05,
+        "detection": 0.042299,
+        "lineage": 4.1e-05,
+        "correlation": 3.4e-05,
+        "lifecycle": 0.000426,
+        "propagation": 1.4e-05,
+        "scoring": 0.000125
+      },
+      "coverage": {
+        "scanned_text": 1,
+        "budget_excluded": 2
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 1,
+          "fp": 1,
+          "fn": 3,
+          "precision": 0.5,
+          "recall": 0.25,
+          "f1": 0.3333333333333333,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "ablation_C",
+      "repeat": 0,
+      "scope": "all",
+      "model": "C",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.043466,
+      "peak_python_memory_bytes": 108473,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.028571,
+        "graph": 0.008828,
+        "snapshots": 5.1e-05,
+        "detection": 0.004757,
+        "lineage": 0.000422,
+        "correlation": 5e-05,
+        "lifecycle": 0.000424,
+        "scoring": 0.000245
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "budget_2",
+      "repeat": 0,
+      "scope": "all",
+      "model": "E",
+      "budget": 2,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.19307,
+      "peak_python_memory_bytes": 108121,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 2,
+        "bytes_scanned": 81,
+        "blob_reads_total": 2,
+        "blob_bytes_read_total": 81,
+        "accepted_matches": 1
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.170686,
+        "graph": 0.014741,
+        "snapshots": 5.4e-05,
+        "detection": 0.00635,
+        "lineage": 0.000354,
+        "correlation": 3.4e-05,
+        "lifecycle": 0.00056,
+        "propagation": 1.5e-05,
+        "scoring": 0.000129
+      },
+      "coverage": {
+        "scanned_text": 2,
+        "budget_excluded": 1
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 2,
+          "fp": 1,
+          "fn": 2,
+          "precision": 0.6666666666666666,
+          "recall": 0.5,
+          "f1": 0.5714285714285714,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "confidence_0.8",
+      "repeat": 2,
+      "scope": "all",
+      "model": "E",
+      "budget": 0,
+      "min_confidence": 0.8,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.046499,
+      "peak_python_memory_bytes": 108601,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "rejected_candidates": 4,
+        "accepted_matches": 0
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.031692,
+        "graph": 0.008396,
+        "snapshots": 5.1e-05,
+        "detection": 0.004894,
+        "lineage": 0.000478,
+        "correlation": 2.3e-05,
+        "lifecycle": 0.000406,
+        "propagation": 1e-05,
+        "scoring": 2e-05
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": null,
+        "unjudged_detections": [],
+        "missing_known_secrets": [
+          "5a835b14ea050405930c07c0c2fa1b885c4e9173e40230ddcc06f12057492b0f"
+        ],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": null,
+        "precision_upper_bound": null,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 0,
+              "unjudged": 0,
+              "precision_at_k": 0.0,
+              "recall_at_k": 0.0,
+              "ndcg_at_k": 0.0,
+              "precision_lower_bound": 0.0,
+              "precision_upper_bound": 0.0
+            },
+            "5": {
+              "returned": 0,
+              "unjudged": 0,
+              "precision_at_k": 0.0,
+              "recall_at_k": 0.0,
+              "ndcg_at_k": 0.0,
+              "precision_lower_bound": 0.0,
+              "precision_upper_bound": 0.0
+            },
+            "10": {
+              "returned": 0,
+              "unjudged": 0,
+              "precision_at_k": 0.0,
+              "recall_at_k": 0.0,
+              "ndcg_at_k": 0.0,
+              "precision_lower_bound": 0.0,
+              "precision_upper_bound": 0.0
+            }
+          }
+        },
+        "events": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 4,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "lineage_0.6",
+      "repeat": 0,
+      "scope": "all",
+      "model": "E",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.6,
+      "duration_seconds": 0.05336,
+      "peak_python_memory_bytes": 108073,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.038286,
+        "graph": 0.008347,
+        "snapshots": 5.3e-05,
+        "detection": 0.005249,
+        "lineage": 0.00053,
+        "correlation": 3.7e-05,
+        "lifecycle": 0.000442,
+        "propagation": 1.5e-05,
+        "scoring": 0.00019
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "confidence_0.6",
+      "repeat": 2,
+      "scope": "all",
+      "model": "E",
+      "budget": 0,
+      "min_confidence": 0.6,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.055087,
+      "peak_python_memory_bytes": 108769,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.033086,
+        "graph": 0.01289,
+        "snapshots": 5.2e-05,
+        "detection": 0.007219,
+        "lineage": 0.000724,
+        "correlation": 3.7e-05,
+        "lifecycle": 0.000424,
+        "propagation": 1.5e-05,
+        "scoring": 0.0005
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "ablation_C",
+      "repeat": 1,
+      "scope": "all",
+      "model": "C",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.051057,
+      "peak_python_memory_bytes": 108473,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.034271,
+        "graph": 0.008543,
+        "snapshots": 7.2e-05,
+        "detection": 0.006548,
+        "lineage": 0.000762,
+        "correlation": 3.7e-05,
+        "lifecycle": 0.000447,
+        "scoring": 0.000245
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "budget_1",
+      "repeat": 2,
+      "scope": "all",
+      "model": "E",
+      "budget": 1,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.049936,
+      "peak_python_memory_bytes": 107633,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 1,
+        "bytes_scanned": 70,
+        "blob_reads_total": 1,
+        "blob_bytes_read_total": 70,
+        "accepted_matches": 1
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.032961,
+        "graph": 0.01084,
+        "snapshots": 8.4e-05,
+        "detection": 0.005028,
+        "lineage": 4.1e-05,
+        "correlation": 0.000273,
+        "lifecycle": 0.000425,
+        "propagation": 1.4e-05,
+        "scoring": 0.000163
+      },
+      "coverage": {
+        "scanned_text": 1,
+        "budget_excluded": 2
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 1,
+          "fp": 1,
+          "fn": 3,
+          "precision": 0.5,
+          "recall": 0.25,
+          "f1": 0.3333333333333333,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "ablation_E",
+      "repeat": 2,
+      "scope": "all",
+      "model": "E",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.058483,
+      "peak_python_memory_bytes": 108137,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.032336,
+        "graph": 0.012905,
+        "snapshots": 5.4e-05,
+        "detection": 0.011476,
+        "lineage": 0.000511,
+        "correlation": 4.9e-05,
+        "lifecycle": 0.000513,
+        "propagation": 2.1e-05,
+        "scoring": 0.000226
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "budget_4",
+      "repeat": 1,
+      "scope": "all",
+      "model": "E",
+      "budget": 4,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.058987,
+      "peak_python_memory_bytes": 108665,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.039776,
+        "graph": 0.010327,
+        "snapshots": 5.4e-05,
+        "detection": 0.007366,
+        "lineage": 0.000582,
+        "correlation": 3.4e-05,
+        "lifecycle": 0.000465,
+        "propagation": 1.5e-05,
+        "scoring": 0.000223
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "lineage_0.6",
+      "repeat": 2,
+      "scope": "all",
+      "model": "E",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.6,
+      "duration_seconds": 0.071203,
+      "peak_python_memory_bytes": 108665,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.052233,
+        "graph": 0.01073,
+        "snapshots": 7.3e-05,
+        "detection": 0.006826,
+        "lineage": 0.000459,
+        "correlation": 3.7e-05,
+        "lifecycle": 0.000432,
+        "propagation": 1.5e-05,
+        "scoring": 0.000255
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "confidence_0.6",
+      "repeat": 0,
+      "scope": "all",
+      "model": "E",
+      "budget": 0,
+      "min_confidence": 0.6,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.068418,
+      "peak_python_memory_bytes": 106881,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.051151,
+        "graph": 0.01067,
+        "snapshots": 5.3e-05,
+        "detection": 0.005294,
+        "lineage": 0.000436,
+        "correlation": 3.5e-05,
+        "lifecycle": 0.000436,
+        "propagation": 3.9e-05,
+        "scoring": 0.000188
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "ablation_E",
+      "repeat": 1,
+      "scope": "all",
+      "model": "E",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.053206,
+      "peak_python_memory_bytes": 108137,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.037774,
+        "graph": 0.008531,
+        "snapshots": 5.2e-05,
+        "detection": 0.005556,
+        "lineage": 0.00045,
+        "correlation": 3.6e-05,
+        "lifecycle": 0.000431,
+        "propagation": 1.5e-05,
+        "scoring": 0.000205
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "ablation_D",
+      "repeat": 1,
+      "scope": "all",
+      "model": "D",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.045957,
+      "peak_python_memory_bytes": 108665,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.029591,
+        "graph": 0.010019,
+        "snapshots": 7.9e-05,
+        "detection": 0.004831,
+        "lineage": 0.000562,
+        "correlation": 3.5e-05,
+        "lifecycle": 0.000431,
+        "propagation": 1.4e-05,
+        "scoring": 0.000261
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "lineage_0.8",
+      "repeat": 2,
+      "scope": "all",
+      "model": "E",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.8,
+      "duration_seconds": 0.065199,
+      "peak_python_memory_bytes": 108665,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.045054,
+        "graph": 0.013104,
+        "snapshots": 5.2e-05,
+        "detection": 0.005712,
+        "lineage": 0.00045,
+        "correlation": 3.4e-05,
+        "lifecycle": 0.000409,
+        "propagation": 1.4e-05,
+        "scoring": 0.000238
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "confidence_0.8",
+      "repeat": 1,
+      "scope": "all",
+      "model": "E",
+      "budget": 0,
+      "min_confidence": 0.8,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.066664,
+      "peak_python_memory_bytes": 107241,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "rejected_candidates": 4,
+        "accepted_matches": 0
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.030014,
+        "graph": 0.008122,
+        "snapshots": 5.1e-05,
+        "detection": 0.027088,
+        "lineage": 0.000534,
+        "correlation": 2.7e-05,
+        "lifecycle": 0.000349,
+        "propagation": 1.2e-05,
+        "scoring": 2.2e-05
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": null,
+        "unjudged_detections": [],
+        "missing_known_secrets": [
+          "5a835b14ea050405930c07c0c2fa1b885c4e9173e40230ddcc06f12057492b0f"
+        ],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": null,
+        "precision_upper_bound": null,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 0,
+              "unjudged": 0,
+              "precision_at_k": 0.0,
+              "recall_at_k": 0.0,
+              "ndcg_at_k": 0.0,
+              "precision_lower_bound": 0.0,
+              "precision_upper_bound": 0.0
+            },
+            "5": {
+              "returned": 0,
+              "unjudged": 0,
+              "precision_at_k": 0.0,
+              "recall_at_k": 0.0,
+              "ndcg_at_k": 0.0,
+              "precision_lower_bound": 0.0,
+              "precision_upper_bound": 0.0
+            },
+            "10": {
+              "returned": 0,
+              "unjudged": 0,
+              "precision_at_k": 0.0,
+              "recall_at_k": 0.0,
+              "ndcg_at_k": 0.0,
+              "precision_lower_bound": 0.0,
+              "precision_upper_bound": 0.0
+            }
+          }
+        },
+        "events": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 4,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "confidence_0.6",
+      "repeat": 1,
+      "scope": "all",
+      "model": "E",
+      "budget": 0,
+      "min_confidence": 0.6,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.055904,
+      "peak_python_memory_bytes": 108137,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.039239,
+        "graph": 0.010593,
+        "snapshots": 5e-05,
+        "detection": 0.004759,
+        "lineage": 0.000451,
+        "correlation": 6.4e-05,
+        "lifecycle": 0.000423,
+        "propagation": 1.4e-05,
+        "scoring": 0.000183
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "baseline_current",
+      "repeat": 0,
+      "scope": "current",
+      "model": "A",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.042011,
+      "peak_python_memory_bytes": 108673,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.028422,
+        "graph": 0.010133,
+        "snapshots": 5.3e-05,
+        "detection": 0.002921,
+        "correlation": 2.2e-05,
+        "lifecycle": 0.000352,
+        "scoring": 1.6e-05
+      },
+      "coverage": {
+        "out_of_scope": 3
+      },
+      "evaluation": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": null,
+        "unjudged_detections": [],
+        "missing_known_secrets": [
+          "5a835b14ea050405930c07c0c2fa1b885c4e9173e40230ddcc06f12057492b0f"
+        ],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": null,
+        "precision_upper_bound": null,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 0,
+              "unjudged": 0,
+              "precision_at_k": 0.0,
+              "recall_at_k": 0.0,
+              "ndcg_at_k": 0.0,
+              "precision_lower_bound": 0.0,
+              "precision_upper_bound": 0.0
+            },
+            "5": {
+              "returned": 0,
+              "unjudged": 0,
+              "precision_at_k": 0.0,
+              "recall_at_k": 0.0,
+              "ndcg_at_k": 0.0,
+              "precision_lower_bound": 0.0,
+              "precision_upper_bound": 0.0
+            },
+            "10": {
+              "returned": 0,
+              "unjudged": 0,
+              "precision_at_k": 0.0,
+              "recall_at_k": 0.0,
+              "ndcg_at_k": 0.0,
+              "precision_lower_bound": 0.0,
+              "precision_upper_bound": 0.0
+            }
+          }
+        },
+        "events": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 4,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "baseline_current",
+      "repeat": 2,
+      "scope": "current",
+      "model": "A",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.058823,
+      "peak_python_memory_bytes": 108265,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.045708,
+        "graph": 0.009469,
+        "snapshots": 5.4e-05,
+        "detection": 0.002934,
+        "correlation": 0.00014,
+        "lifecycle": 0.000404,
+        "scoring": 1.7e-05
+      },
+      "coverage": {
+        "out_of_scope": 3
+      },
+      "evaluation": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": null,
+        "unjudged_detections": [],
+        "missing_known_secrets": [
+          "5a835b14ea050405930c07c0c2fa1b885c4e9173e40230ddcc06f12057492b0f"
+        ],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": null,
+        "precision_upper_bound": null,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 0,
+              "unjudged": 0,
+              "precision_at_k": 0.0,
+              "recall_at_k": 0.0,
+              "ndcg_at_k": 0.0,
+              "precision_lower_bound": 0.0,
+              "precision_upper_bound": 0.0
+            },
+            "5": {
+              "returned": 0,
+              "unjudged": 0,
+              "precision_at_k": 0.0,
+              "recall_at_k": 0.0,
+              "ndcg_at_k": 0.0,
+              "precision_lower_bound": 0.0,
+              "precision_upper_bound": 0.0
+            },
+            "10": {
+              "returned": 0,
+              "unjudged": 0,
+              "precision_at_k": 0.0,
+              "recall_at_k": 0.0,
+              "ndcg_at_k": 0.0,
+              "precision_lower_bound": 0.0,
+              "precision_upper_bound": 0.0
+            }
+          }
+        },
+        "events": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 4,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "budget_4",
+      "repeat": 0,
+      "scope": "all",
+      "model": "E",
+      "budget": 4,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.107369,
+      "peak_python_memory_bytes": 108425,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.065574,
+        "graph": 0.020602,
+        "snapshots": 5.3e-05,
+        "detection": 0.016009,
+        "lineage": 0.002473,
+        "correlation": 5.6e-05,
+        "lifecycle": 0.001839,
+        "propagation": 2e-05,
+        "scoring": 0.000613
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "baseline_reachable",
+      "repeat": 2,
+      "scope": "reachable",
+      "model": "A",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.055024,
+      "peak_python_memory_bytes": 108025,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.03813,
+        "graph": 0.00894,
+        "snapshots": 5.2e-05,
+        "detection": 0.00659,
+        "correlation": 3.4e-05,
+        "lifecycle": 0.00044,
+        "scoring": 0.000528
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "ablation_A",
+      "repeat": 0,
+      "scope": "all",
+      "model": "A",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.053173,
+      "peak_python_memory_bytes": 108137,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.033658,
+        "graph": 0.011277,
+        "snapshots": 5.2e-05,
+        "detection": 0.007349,
+        "correlation": 3.4e-05,
+        "lifecycle": 0.000456,
+        "scoring": 0.000219
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "ablation_A",
+      "repeat": 2,
+      "scope": "all",
+      "model": "A",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.101668,
+      "peak_python_memory_bytes": 108025,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.028535,
+        "graph": 0.063099,
+        "snapshots": 5.7e-05,
+        "detection": 0.009117,
+        "correlation": 3.6e-05,
+        "lifecycle": 0.000458,
+        "scoring": 0.000225
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "ablation_C",
+      "repeat": 2,
+      "scope": "all",
+      "model": "C",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.0497,
+      "peak_python_memory_bytes": 107401,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.030625,
+        "graph": 0.01275,
+        "snapshots": 5.4e-05,
+        "detection": 0.005082,
+        "lineage": 0.000417,
+        "correlation": 3.2e-05,
+        "lifecycle": 0.000443,
+        "scoring": 0.000179
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "ablation_D",
+      "repeat": 0,
+      "scope": "all",
+      "model": "D",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.045108,
+      "peak_python_memory_bytes": 108137,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.027622,
+        "graph": 0.010811,
+        "snapshots": 4.9e-05,
+        "detection": 0.005365,
+        "lineage": 0.000424,
+        "correlation": 3.3e-05,
+        "lifecycle": 0.000467,
+        "propagation": 1.4e-05,
+        "scoring": 0.000198
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "ablation_D",
+      "repeat": 2,
+      "scope": "all",
+      "model": "D",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.049259,
+      "peak_python_memory_bytes": 108665,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.028242,
+        "graph": 0.013429,
+        "snapshots": 5.4e-05,
+        "detection": 0.006149,
+        "lineage": 0.000423,
+        "correlation": 3.3e-05,
+        "lifecycle": 0.000418,
+        "propagation": 1.4e-05,
+        "scoring": 0.000351
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "baseline_current",
+      "repeat": 1,
+      "scope": "current",
+      "model": "A",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.044306,
+      "peak_python_memory_bytes": 108505,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.02977,
+        "graph": 0.009878,
+        "snapshots": 5.3e-05,
+        "detection": 0.004043,
+        "correlation": 2.2e-05,
+        "lifecycle": 0.000372,
+        "scoring": 1.6e-05
+      },
+      "coverage": {
+        "out_of_scope": 3
+      },
+      "evaluation": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "precision": null,
+        "recall": 0.0,
+        "f1": 0.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": null,
+        "unjudged_detections": [],
+        "missing_known_secrets": [
+          "5a835b14ea050405930c07c0c2fa1b885c4e9173e40230ddcc06f12057492b0f"
+        ],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": null,
+        "precision_upper_bound": null,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 0,
+              "unjudged": 0,
+              "precision_at_k": 0.0,
+              "recall_at_k": 0.0,
+              "ndcg_at_k": 0.0,
+              "precision_lower_bound": 0.0,
+              "precision_upper_bound": 0.0
+            },
+            "5": {
+              "returned": 0,
+              "unjudged": 0,
+              "precision_at_k": 0.0,
+              "recall_at_k": 0.0,
+              "ndcg_at_k": 0.0,
+              "precision_lower_bound": 0.0,
+              "precision_upper_bound": 0.0
+            },
+            "10": {
+              "returned": 0,
+              "unjudged": 0,
+              "precision_at_k": 0.0,
+              "recall_at_k": 0.0,
+              "ndcg_at_k": 0.0,
+              "precision_lower_bound": 0.0,
+              "precision_upper_bound": 0.0
+            }
+          }
+        },
+        "events": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 4,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "ablation_A",
+      "repeat": 1,
+      "scope": "all",
+      "model": "A",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.7,
+      "duration_seconds": 0.059805,
+      "peak_python_memory_bytes": 107137,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.034038,
+        "graph": 0.015557,
+        "snapshots": 5.3e-05,
+        "detection": 0.009358,
+        "correlation": 3.4e-05,
+        "lifecycle": 0.000493,
+        "scoring": 0.000181
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    },
+    {
+      "case": "lineage_0.8",
+      "repeat": 1,
+      "scope": "all",
+      "model": "E",
+      "budget": 0,
+      "min_confidence": 0.4,
+      "lineage_threshold": 0.8,
+      "duration_seconds": 0.048515,
+      "peak_python_memory_bytes": 108305,
+      "io_accounting": {
+        "structural_objects_read": 8,
+        "structural_bytes_read": 1050,
+        "objects_scanned": 3,
+        "bytes_scanned": 152,
+        "blob_reads_total": 3,
+        "blob_bytes_read_total": 152,
+        "accepted_matches": 2
+      },
+      "phase_seconds": {
+        "objects_and_state": 0.034151,
+        "graph": 0.008134,
+        "snapshots": 5e-05,
+        "detection": 0.004854,
+        "lineage": 0.000463,
+        "correlation": 3.4e-05,
+        "lifecycle": 0.000452,
+        "propagation": 1.5e-05,
+        "scoring": 0.000219
+      },
+      "coverage": {
+        "scanned_text": 3
+      },
+      "evaluation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tn": 0,
+        "unit": "unique credential fingerprint",
+        "labelled_subset_precision": 1.0,
+        "unjudged_detections": [],
+        "missing_known_secrets": [],
+        "unlisted_policy": "negative",
+        "ground_truth_complete": true,
+        "precision_lower_bound": 1.0,
+        "precision_upper_bound": 1.0,
+        "ranking": {
+          "unit": "unique secret fingerprint, max occurrence score; fixed K denominator",
+          "known_relevant": 1,
+          "metrics": {
+            "1": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 1.0,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 1.0,
+              "precision_upper_bound": 1.0
+            },
+            "5": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.2,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.2,
+              "precision_upper_bound": 0.2
+            },
+            "10": {
+              "returned": 1,
+              "unjudged": 0,
+              "precision_at_k": 0.1,
+              "recall_at_k": 1.0,
+              "ndcg_at_k": 1.0,
+              "precision_lower_bound": 0.1,
+              "precision_upper_bound": 0.1
+            }
+          }
+        },
+        "events": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "event",
+            "commit",
+            "parent_commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        },
+        "occurrences": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "matching_fields": [
+            "fingerprint",
+            "blob_oid",
+            "commit",
+            "path"
+          ],
+          "complete_labels": true,
+          "unjudged_predictions": 0
+        }
+      }
+    }
+  ]
+}

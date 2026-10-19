@@ -1,0 +1,61 @@
+{
+  "schema": "gasld-ground-truth-v2",
+  "dataset_id": "four-commit-synthetic-demo",
+  "complete": true,
+  "unlisted_policy": "negative",
+  "label_basis": "Synthetic construction; illustrative relevance is not a real-world risk label",
+  "items": [
+    {
+      "id": "S1",
+      "value": "RESEARCH_SECRET_A1B2C3D4A1B2C3D4A1B2C3D4A1B2C3D4",
+      "expected_secret": true,
+      "relevance": 2
+    }
+  ],
+  "events_complete": true,
+  "events": [
+    {
+      "fingerprint": "5a835b14ea050405930c07c0c2fa1b885c4e9173e40230ddcc06f12057492b0f",
+      "event": "introduction",
+      "commit": "a676badd4f34efad6da0a4733422437363519d8d",
+      "parent_commit": null,
+      "path": "config.env"
+    },
+    {
+      "fingerprint": "5a835b14ea050405930c07c0c2fa1b885c4e9173e40230ddcc06f12057492b0f",
+      "event": "persistence",
+      "commit": "875a9b02e58f166c48bc1ed5b31032d937c2ba50",
+      "parent_commit": "a676badd4f34efad6da0a4733422437363519d8d",
+      "path": "config.env"
+    },
+    {
+      "fingerprint": "5a835b14ea050405930c07c0c2fa1b885c4e9173e40230ddcc06f12057492b0f",
+      "event": "secret_removed",
+      "commit": "112f77549bdb1146e6b239ff9374777e52fdfd14",
+      "parent_commit": "875a9b02e58f166c48bc1ed5b31032d937c2ba50",
+      "path": "config.env"
+    },
+    {
+      "fingerprint": "5a835b14ea050405930c07c0c2fa1b885c4e9173e40230ddcc06f12057492b0f",
+      "event": "file_deleted_after_removal",
+      "commit": "fa54fd2373383771ad9c0b0a92a18533715caad2",
+      "parent_commit": "112f77549bdb1146e6b239ff9374777e52fdfd14",
+      "path": "config.env"
+    }
+  ],
+  "occurrences_complete": true,
+  "occurrences": [
+    {
+      "fingerprint": "5a835b14ea050405930c07c0c2fa1b885c4e9173e40230ddcc06f12057492b0f",
+      "commit": "a676badd4f34efad6da0a4733422437363519d8d",
+      "path": "config.env",
+      "blob_oid": "f0fb835359d431b88b7efd6d9d9c30616d48f44b"
+    },
+    {
+      "fingerprint": "5a835b14ea050405930c07c0c2fa1b885c4e9173e40230ddcc06f12057492b0f",
+      "commit": "875a9b02e58f166c48bc1ed5b31032d937c2ba50",
+      "path": "config.env",
+      "blob_oid": "0f29df8f6768f37a758731b957f4206fd7ad5e36"
+    }
+  ]
+}

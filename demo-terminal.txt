@@ -1,0 +1,45 @@
+
+GASLD 0.2.0-research
+====================================================================================
+Target                  : /workspace/scratch/52ecfc40de1e/demo-validation/repo
+Scope                   : all
+Object format           : sha1
+Objects                 : 11
+  commits               : 4
+  trees                 : 4
+  blobs                 : 3
+  annotated tags        : 0
+Current objects         : 2
+Historical objects      : 9
+Reachable objects       : 11
+Unreachable objects     : 0
+Packed objects          : 0
+Object graph edges      : 10
+Commits analyzed        : 4
+Path changes            : 4
+Lineage edges           : 1
+Unique secret IDs       : 1
+Secret occurrences      : 2
+Lifecycle events        : 4
+Content-scanned objects : 3
+Data scanned            : 152 B
+Duration                : 0.071s
+
+RISK-PRIORITIZED FINDINGS
+------------------------------------------------------------------------------------
+001 [HIGH    ] risk=0.7048 S-5a835b14ea050405930c  config.env
+      blob=0f29df8f6768f37a758731b957f4206fd7ad5e36 commit=875a9b02e58f166c48bc1ed5b31032d937c2ba50 current=False reachable=True historical=True packed=False
+      components: C=0.785 R=0.820 D=1.000 H=0.499 L=0.977 P=0.000
+002 [HIGH    ] risk=0.7048 S-5a835b14ea050405930c  config.env
+      blob=f0fb835359d431b88b7efd6d9d9c30616d48f44b commit=a676badd4f34efad6da0a4733422437363519d8d current=False reachable=True historical=True packed=False
+      components: C=0.785 R=0.820 D=1.000 H=0.499 L=0.977 P=0.000
+
+GROUND-TRUTH EVALUATION
+------------------------------------------------------------------------------------
+TP=1 FP=0 TN=0 FN=0  Precision=1.0 Recall=1.0 F1=1.0
+
+EXPERIMENTAL PARAMETER NOTICE
+------------------------------------------------------------------------------------
+Weights and thresholds are experimental parameters, not scientifically established constants.
+
+Report written to: /workspace/scratch/52ecfc40de1e/demo-validation/report.json
